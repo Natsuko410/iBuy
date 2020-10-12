@@ -14,12 +14,12 @@ namespace serveur.Models
 
         public int Quantite { get; set; }
 
-        [ForeignKey("IdAchat")]
-        public Achat Achat { get; set; }
-        public int? IdAchat { get; set; }
+        [ForeignKey("Achat")]
+        public int IdAchat { get; set; }
+        public virtual Achat Achat { get; set; }
 
-        [ForeignKey("IdUser")]
-        public User User { get; set; }
+        [ForeignKey("User")]
         public int? IdUser { get; set; }
+        public virtual User User { get; set; }
     }
 }

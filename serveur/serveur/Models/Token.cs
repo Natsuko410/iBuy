@@ -15,7 +15,7 @@ namespace serveur.Models
         public string TokenStr { get; set; }
 
         [ForeignKey("User")]
-        public int UserId { get; set; }
+        public int? IdUser { get; set; }
 
         [JsonIgnore]
         public virtual User User { get; set; }

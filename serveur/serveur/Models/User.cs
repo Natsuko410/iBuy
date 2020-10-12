@@ -10,8 +10,10 @@ namespace serveur.Models
     public class User
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IdUser { get; set; }
+        public string Nom { get; set; }
+        public string Prenom { get; set; }
+        public string Pseudo { get; set; }
         public string Email { get; set; }
         public string Mdp { get; set; }
         public string Tel { get; set; }

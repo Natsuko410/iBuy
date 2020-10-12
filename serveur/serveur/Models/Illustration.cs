@@ -10,8 +10,7 @@ namespace serveur.Models
     public class Illustration
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IdIllu { get; set; }
-        public String Path { get; set; }
+        public string Path { get; set; }
     }
 }

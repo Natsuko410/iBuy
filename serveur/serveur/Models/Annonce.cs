@@ -10,20 +10,19 @@ namespace serveur.Models
     public class Annonce
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IdAnno { get; set; }
         public DateTime DateAjout { get; set; }
-        public int Etat { get; set; }
+        public string Etat { get; set; }
         public bool IsEnchere { get; set; }
         public bool IsAchat { get; set; }
 
-        [ForeignKey("IdUser")]
-        public User User { get; set; }
+        [ForeignKey("User")]
         public int? IdUser { get; set; }
+        public virtual User User { get; set; }
 
-        [ForeignKey("IdProd")]
-        public Produit Produit { get; set; }
-        public int? IdProd { get; set; }
+        [ForeignKey("Produit")]
+        public int IdProd { get; set; }
+        public virtual Produit Produit { get; set; }
 
     }
 }

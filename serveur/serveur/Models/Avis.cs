@@ -13,14 +13,11 @@ namespace serveur.Models
         public int IdAvis { get; set; }
         public string Texte { get; set; }
         public DateTime DatePoste { get; set; }
+        public int IdConcerne { get; set; }
 
-        [ForeignKey("IdConcerne")]
-        public User UserConcerne { get; set; }
-        public int? IdConcerne { get; set; }
-
-        [ForeignKey("IdUser")]
-        public User User { get; set; }
-        public int? IdUser { get; set; }
+        [ForeignKey("User")]
+        public int IdUser { get; set; }
+        public virtual User User { get; set; }
 
     }
 }

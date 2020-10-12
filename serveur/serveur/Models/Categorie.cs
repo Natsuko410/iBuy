@@ -10,9 +10,8 @@ namespace serveur.Models
     public class Categorie
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IdCat { get; set; }
-        public String Nom { get; set; }
-        public String Desc { get; set; }
+        public string Nom { get; set; }
+        public string Desc { get; set; }
     }
 }
