@@ -20,8 +20,5 @@ namespace serveur.Models
         public Categorie Categorie { get; set; }
         public int IdCat { get; set; }
 
-        [ForeignKey("IdAnno")]
-        public Annonce Annonce { get; set; }
-        public int IdAnno { get; set; }
     }
 }

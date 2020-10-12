@@ -21,5 +21,9 @@ namespace serveur.Models
         public User User { get; set; }
         public int? IdUser { get; set; }
 
+        [ForeignKey("IdProd")]
+        public Produit Produit { get; set; }
+        public int? IdProd { get; set; }
+
     }
 }
