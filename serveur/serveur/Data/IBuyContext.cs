@@ -21,8 +21,6 @@ namespace serveur.Data
 
         public System.Data.Entity.DbSet<serveur.Models.User> Users { get; set; }
 
-        public System.Data.Entity.DbSet<serveur.Models.Token> Tokens { get; set; }
-
         public System.Data.Entity.DbSet<serveur.Models.Produit> Produits { get; set; }
 
         public System.Data.Entity.DbSet<serveur.Models.Categorie> Categories { get; set; }
@@ -38,5 +36,7 @@ namespace serveur.Data
         public System.Data.Entity.DbSet<serveur.Models.Acquisition> Acquisitions { get; set; }
 
         public System.Data.Entity.DbSet<serveur.Models.Achat> Achats { get; set; }
+
+        public System.Data.Entity.DbSet<serveur.Models.TokenWallet> TokenWallets { get; set; }
     }
 }

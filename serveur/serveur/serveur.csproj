@@ -170,13 +170,26 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IllustrationsController.cs" />
     <Compile Include="Controllers\ProduitsController.cs" />
-    <Compile Include="Controllers\TokensController.cs" />
+    <Compile Include="Controllers\TokenWalletsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Data\IBuyContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202010131704362_Initial.cs" />
+    <Compile Include="Migrations\202010131704362_Initial.Designer.cs">
+      <DependentUpon>202010131704362_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010141828009_changeUserModel.cs" />
+    <Compile Include="Migrations\202010141828009_changeUserModel.Designer.cs">
+      <DependentUpon>202010141828009_changeUserModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010141830237_changeUserAndTokenWalletModels.cs" />
+    <Compile Include="Migrations\202010141830237_changeUserAndTokenWalletModels.Designer.cs">
+      <DependentUpon>202010141830237_changeUserAndTokenWalletModels.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Achat.cs" />
     <Compile Include="Models\Acquisition.cs" />
     <Compile Include="Models\Annonce.cs" />
@@ -185,9 +198,11 @@
     <Compile Include="Models\Enchere.cs" />
     <Compile Include="Models\Illustration.cs" />
     <Compile Include="Models\Produit.cs" />
-    <Compile Include="Models\Token.cs" />
+    <Compile Include="Models\TokenWallet.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\BCrypt.cs" />
+    <Compile Include="Services\TokenService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -271,6 +286,17 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202010131704362_Initial.resx">
+      <DependentUpon>202010131704362_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010141828009_changeUserModel.resx">
+      <DependentUpon>202010141828009_changeUserModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010141830237_changeUserAndTokenWalletModels.resx">
+      <DependentUpon>202010141830237_changeUserAndTokenWalletModels.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

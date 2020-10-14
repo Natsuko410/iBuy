@@ -5,19 +5,20 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using System.Xml.Serialization;
 
 namespace serveur.Models
 {
-    public class Token
+    public class TokenWallet
     {
         [Key]
-        public int TokenWalletId { get; set; }
-        public string TokenStr { get; set; }
+        public int IdTokenWallet { get; set; }
+        public string Token { get; set; }
 
         [ForeignKey("User")]
-        public int? IdUser { get; set; }
+        public int IdUser { get; set; }
 
-        [JsonIgnore]
+        [JsonIgnore, XmlIgnore]
         public virtual User User { get; set; }
     }
 }

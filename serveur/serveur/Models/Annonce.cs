@@ -11,6 +11,7 @@ namespace serveur.Models
     {
         [Key]
         public int IdAnno { get; set; }
+        public string Titre { get; set; }
         public DateTime DateAjout { get; set; }
         public string Etat { get; set; }
         public bool IsEnchere { get; set; }

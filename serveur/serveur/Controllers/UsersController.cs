@@ -6,6 +6,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using serveur.Data;
@@ -73,15 +74,28 @@ namespace serveur.Controllers
 
         // POST: api/Users
         [ResponseType(typeof(User))]
-        public IHttpActionResult PostUser(User user)
+        public IHttpActionResult PostUser([FromBody] User user)
         {
+            
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            // Check if this user pseudo isn't already taken
+            if (db.Users.First<User>(u => u.Pseudo == user.Pseudo) != null)
+            {
+                return BadRequest("Ce pseudo est déjà pris !");
+            }
+
+            // Hash password before saving
+            user.Mdp = BCrypt.HashPassword(user.Mdp, BCrypt.GenerateSalt());
+
             db.Users.Add(user);
             db.SaveChanges();
+
+            // set Mdp to null before returning the user object
+            user.Mdp = null;
 
             return CreatedAtRoute("DefaultApi", new { id = user.IdUser }, user);
         }
