@@ -181,6 +181,10 @@
     <Compile Include="Migrations\202010131704362_Initial.Designer.cs">
       <DependentUpon>202010131704362_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202010131913478_MajModels.cs" />
+    <Compile Include="Migrations\202010131913478_MajModels.Designer.cs">
+      <DependentUpon>202010131913478_MajModels.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\202010141828009_changeUserModel.cs" />
     <Compile Include="Migrations\202010141828009_changeUserModel.Designer.cs">
       <DependentUpon>202010141828009_changeUserModel.cs</DependentUpon>
@@ -290,6 +294,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202010131704362_Initial.resx">
       <DependentUpon>202010131704362_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010131913478_MajModels.resx">
+      <DependentUpon>202010131913478_MajModels.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202010141828009_changeUserModel.resx">
       <DependentUpon>202010141828009_changeUserModel.cs</DependentUpon>
