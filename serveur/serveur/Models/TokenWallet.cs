@@ -13,6 +13,9 @@ namespace serveur.Models
     {
         [Key]
         public int IdTokenWallet { get; set; }
+        [
+         Required,
+        ]
         public string Token { get; set; }
 
         [ForeignKey("User")]

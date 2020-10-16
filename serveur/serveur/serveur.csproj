@@ -193,6 +193,10 @@
     <Compile Include="Migrations\202010141830237_changeUserAndTokenWalletModels.Designer.cs">
       <DependentUpon>202010141830237_changeUserAndTokenWalletModels.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202010161007550_MajModelV2.cs" />
+    <Compile Include="Migrations\202010161007550_MajModelV2.Designer.cs">
+      <DependentUpon>202010161007550_MajModelV2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Achat.cs" />
     <Compile Include="Models\Acquisition.cs" />
@@ -303,6 +307,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202010141830237_changeUserAndTokenWalletModels.resx">
       <DependentUpon>202010141830237_changeUserAndTokenWalletModels.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010161007550_MajModelV2.resx">
+      <DependentUpon>202010161007550_MajModelV2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

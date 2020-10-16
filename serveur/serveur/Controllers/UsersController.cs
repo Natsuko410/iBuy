@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Newtonsoft.Json;
 using serveur.Data;
 using serveur.Models;
 
@@ -76,14 +77,14 @@ namespace serveur.Controllers
         [ResponseType(typeof(User))]
         public IHttpActionResult PostUser([FromBody] User user)
         {
-            
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
             // Check if this user pseudo isn't already taken
-            if (db.Users.First<User>(u => u.Pseudo == user.Pseudo) != null)
+            if (db.Users.FirstOrDefault<User>(u => u.Pseudo == user.Pseudo) != null)
             {
                 return BadRequest("Ce pseudo est déjà pris !");
             }
@@ -94,7 +95,7 @@ namespace serveur.Controllers
             db.Users.Add(user);
             db.SaveChanges();
 
-            // set Mdp to null before returning the user object
+            // set Mdp to null before returning the User object
             user.Mdp = null;
 
             return CreatedAtRoute("DefaultApi", new { id = user.IdUser }, user);
