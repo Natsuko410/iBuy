@@ -13,9 +13,9 @@ namespace serveur.Models
     {
         [Key]
         public int IdAchat { get; set; }
-        [Required(ErrorMessage = "Le champs prix est obligatoire")]
+        [Required(ErrorMessage = "Le champs prix est obligatoire.")]
         public double Prix { get; set; }
-        [Required(ErrorMessage = "Le champs quantité est obligatoire")]
+        [Required(ErrorMessage = "Le champs quantité est obligatoire.")]
         public int Quantite { get; set; }
 
         [ForeignKey("User")]

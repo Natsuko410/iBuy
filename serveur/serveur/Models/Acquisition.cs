@@ -13,7 +13,7 @@ namespace serveur.Models
     {
         [Key]
         public int IdAcqu { get; set; }
-        [Required(ErrorMessage ="Le champs quantité est obligatoire")]
+        [Required(ErrorMessage ="Le champs quantité est obligatoire.")]
         public int Quantite { get; set; }
 
         [ForeignKey("Achat")]

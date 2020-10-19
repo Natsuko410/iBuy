@@ -13,11 +13,11 @@ namespace serveur.Models
     {
         [Key]
         public int IdEnch { get; set; }
-        [Required(ErrorMessage = "Le champs montant minimum est obligatoire")]
+        [Required(ErrorMessage = "Le champs montant minimum est obligatoire.")]
         public double MontantMin { get; set; }
-        [Required(ErrorMessage = "Le champs date de début est obligatoire")]
+        [Required(ErrorMessage = "Le champs date de début est obligatoire.")]
         public DateTime DateDebut { get; set; }
-        [Required(ErrorMessage = "Le champs date de fin est obligatoire")]
+        [Required(ErrorMessage = "Le champs date de fin est obligatoire.")]
         public DateTime DateFin { get; set; }
 
         [ForeignKey("Annonce")]

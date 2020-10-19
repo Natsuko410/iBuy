@@ -12,7 +12,7 @@ namespace serveur.Models
         [Key]
         public int IdProd { get; set; }
         [
-         Required(ErrorMessage = "Le champs nom est obligatoire"),
+         Required(ErrorMessage = "Le champs nom est obligatoire."),
          MaxLength(512, ErrorMessage = "ce champs ne peut pas excédé 512 caractères.")
         ]
         public string Nom { get; set; }
@@ -21,7 +21,7 @@ namespace serveur.Models
         ]
         public string Description { get; set; }
         [
-         Required(ErrorMessage = "Le champs nom est obligatoire"),
+         Required(ErrorMessage = "Le champs nom est obligatoire."),
          MaxLength(56, ErrorMessage = "ce champs ne peut pas excédé 56 caractères.")
         ]
         public string Etat { get; set; }
