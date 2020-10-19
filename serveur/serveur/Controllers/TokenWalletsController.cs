@@ -22,38 +22,45 @@ namespace serveur.Controllers
         // GET: api/TokenWallets
         public IHttpActionResult GetTokens([FromUri] string pseudo, [FromUri] string mdp)
         {
-            if (pseudo.IsNullOrWhiteSpace() || mdp.IsNullOrWhiteSpace())
+            try
             {
-                return BadRequest("L'identifiant de connexion ou le mot de passe n'a pas été fourni !");
-            }
-
-            // Find User in Database + Check password Hash
-            User User = db.Users.FirstOrDefault(user => user.Pseudo == pseudo);
-            if (BCrypt.CheckPassword(mdp, User.Mdp))
-            {
-                // Check if the user doesn't already have a token active and delete it if yes
-                TokenWallet TokenWallet = db.TokenWallets.FirstOrDefault<TokenWallet>(tokw => tokw.IdUser == User.IdUser);
-                if (TokenWallet != null)
+                if (pseudo.IsNullOrWhiteSpace() || mdp.IsNullOrWhiteSpace())
                 {
-                    db.TokenWallets.Remove(TokenWallet);
+                    return BadRequest("L'identifiant de connexion ou le mot de passe n'a pas été fourni !");
                 }
 
-                // Create new token
-                string Token = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-                TokenWallet tw = new TokenWallet
+                // Finds User in Database + Checks password Hash
+                User User = db.Users.FirstOrDefault<User>(user => user.Pseudo == pseudo);
+                if (User != null && BCrypt.CheckPassword(mdp, User.Mdp))
                 {
-                    Token = Token,
-                    User = User
-                };
+                    // Checks if the user doesn't already have a token active and delete it if yes
+                    TokenWallet TokenWallet = db.TokenWallets.FirstOrDefault<TokenWallet>(tokw => tokw.IdUser == User.IdUser);
+                    if (TokenWallet != null)
+                    {
+                        db.TokenWallets.Remove(TokenWallet);
+                    }
 
-                db.TokenWallets.Add(tw);
-                db.SaveChanges();
+                    // Creates new token
+                    string Token = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+                    TokenWallet tw = new TokenWallet
+                    {
+                        Token = Token,
+                        User = User
+                    };
 
-                return Ok(db.TokenWallets.FirstOrDefault(T => T.IdTokenWallet == tw.IdTokenWallet));
+                    db.TokenWallets.Add(tw);
+                    db.SaveChanges();
+
+                    return Ok(db.TokenWallets.FirstOrDefault(t => t.IdTokenWallet == tw.IdTokenWallet));
+                }
+
+                // END Find User in Database + Check password Hash
+                return Unauthorized();
             }
-
-            // END Find User in Database + Check password Hash
-            return Unauthorized();
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         // GET: api/TokenWallets/5
@@ -79,18 +86,9 @@ namespace serveur.Controllers
 
         // DELETE: api/TokenWallets/AxdfegRghyTr...
         [ResponseType(typeof(TokenWallet))]
-        public IHttpActionResult DeleteTokenWallet(string token)
+        public IHttpActionResult DeleteTokenWallet(int id)
         {
-            TokenWallet TokenWallet = db.TokenWallets.FirstOrDefault<TokenWallet>(tokw => tokw.Token == token);
-            if (TokenWallet == null)
-            {
-                return NotFound();
-            }
-
-            db.TokenWallets.Remove(TokenWallet);
-            db.SaveChanges();
-
-            return Ok(TokenWallet);
+            return Unauthorized();
         }
 
         protected override void Dispose(bool disposing)

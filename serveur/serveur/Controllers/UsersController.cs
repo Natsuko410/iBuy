@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
-using Newtonsoft.Json;
+using SecureAPIExemple.Services;
 using serveur.Data;
 using serveur.Models;
 
@@ -29,92 +27,132 @@ namespace serveur.Controllers
         [ResponseType(typeof(User))]
         public IHttpActionResult GetUser(int id)
         {
-            User user = db.Users.Find(id);
-            if (user == null)
+            try
             {
-                return NotFound();
-            }
+                User user = db.Users.Find(id);
+                if (user == null)
+                {
+                    return NotFound();
+                }
 
-            return Ok(user);
+                return Ok(user);
+            }
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         // PUT: api/Users/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutUser(int id, User user)
+        public IHttpActionResult PutUser([FromBody] User user)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != user.IdUser)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(user).State = EntityState.Modified;
-
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
+                if (!ModelState.IsValid)
                 {
-                    return NotFound();
+                    return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
+                            + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                        );
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return StatusCode(HttpStatusCode.NoContent);
+                // Checks token validity
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1) || IdUser != user.IdUser)
+                {
+                    return BadRequest("L'identifiant fourni n'est pas correct.");
+                }
+
+                db.Entry(user).State = EntityState.Modified;
+
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UserExists(IdUser))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return StatusCode(HttpStatusCode.NoContent);
+            }
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         // POST: api/Users
         [ResponseType(typeof(User))]
-        public IHttpActionResult PostUser([FromBody] User user)
+        public IHttpActionResult PostUser(User user)
         {
-
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
+                        + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                    );
+                }
 
-            // Check if this user pseudo isn't already taken
-            if (db.Users.FirstOrDefault<User>(u => u.Pseudo == user.Pseudo) != null)
+                // Checks if this user pseudo isn't already taken
+                if (db.Users.Count(u => u.Pseudo.Equals(user.Pseudo)) > 0)
+                {
+                    return BadRequest("Ce pseudo est déjà utilisé.");
+                }
+
+                // Hash password before saving
+                user.Mdp = BCrypt.HashPassword(user.Mdp, BCrypt.GenerateSalt());
+
+                db.Users.Add(user);
+                db.SaveChanges();
+
+            } catch
             {
-                return BadRequest("Ce pseudo est déjà pris !");
+                return InternalServerError();
             }
-
-            // Hash password before saving
-            user.Mdp = BCrypt.HashPassword(user.Mdp, BCrypt.GenerateSalt());
-
-            db.Users.Add(user);
-            db.SaveChanges();
-
-            // set Mdp to null before returning the User object
-            user.Mdp = null;
 
             return CreatedAtRoute("DefaultApi", new { id = user.IdUser }, user);
         }
 
         // DELETE: api/Users/5
         [ResponseType(typeof(User))]
-        public IHttpActionResult DeleteUser(int id)
+        public IHttpActionResult DeleteUser()
         {
-            User user = db.Users.Find(id);
-            if (user == null)
+            
+
+            try
             {
-                return NotFound();
+                // Checks token validity
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1))
+                {
+                    return BadRequest("L'identifiant fourni n'est pas correct.");
+                }
+
+                // Find user
+                User user = db.Users.Find(IdUser);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                db.Users.Remove(user);
+                db.SaveChanges();
+
+                return Ok(user);
             }
-
-            db.Users.Remove(user);
-            db.SaveChanges();
-
-            return Ok(user);
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         protected override void Dispose(bool disposing)
