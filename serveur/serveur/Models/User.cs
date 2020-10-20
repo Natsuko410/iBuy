@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -29,6 +30,8 @@ namespace serveur.Models
          MaxLength(48, ErrorMessage = "ce champs ne peut pas excédé 48 caractères.")
         ]
         public string Pseudo { get; set; }
+        [DefaultValue(0)]
+        public double MoyenneNote { get; set; }
         [
          Required(ErrorMessage = "Le champs email est obligatoire."),
          MaxLength(320, ErrorMessage = "ce champs ne peut pas excédé 320 caractères.")
