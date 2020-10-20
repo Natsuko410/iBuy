@@ -19,6 +19,8 @@ namespace serveur.Models
          MaxLength(50, ErrorMessage = "ce champs ne peut pas excédé 50 caractères.")
         ]
         public string Titre { get; set; }
+        [Required(ErrorMessage = "Le champs montant minimum est obligatoire.")] 
+        public double MontantMin { get; set; }
         [Required(ErrorMessage = "Le champs date d'ajout est obligatoire.")]
         public DateTime DateAjout { get; set; }
         [
@@ -28,8 +30,6 @@ namespace serveur.Models
         public string Etat { get; set; }
         [Required(ErrorMessage ="Le champs est une enchère est obligatoire.")]
         public bool IsEnchere { get; set; }
-        [Required(ErrorMessage = "Le champs est un achat est obligatoire.")]
-        public bool IsAchat { get; set; }
 
         [ForeignKey("User")]
         public int? IdUser { get; set; }

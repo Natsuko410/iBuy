@@ -38,5 +38,9 @@ namespace serveur.Data
         public System.Data.Entity.DbSet<serveur.Models.Achat> Achats { get; set; }
 
         public System.Data.Entity.DbSet<serveur.Models.TokenWallet> TokenWallets { get; set; }
+
+        public System.Data.Entity.DbSet<serveur.Models.Favori> Favoris { get; set; }
+
+        public System.Data.Entity.DbSet<serveur.Models.Offre> Offres { get; set; }
     }
 }

@@ -167,8 +167,10 @@
     <Compile Include="Controllers\AvisController.cs" />
     <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\EncheresController.cs" />
+    <Compile Include="Controllers\FavorisController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IllustrationsController.cs" />
+    <Compile Include="Controllers\OffresController.cs" />
     <Compile Include="Controllers\ProduitsController.cs" />
     <Compile Include="Controllers\TokenWalletsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
@@ -201,6 +203,10 @@
     <Compile Include="Migrations\202010191352320_MajModel3.Designer.cs">
       <DependentUpon>202010191352320_MajModel3.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202010201515596_MajModel4.cs" />
+    <Compile Include="Migrations\202010201515596_MajModel4.Designer.cs">
+      <DependentUpon>202010201515596_MajModel4.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Achat.cs" />
     <Compile Include="Models\Acquisition.cs" />
@@ -208,7 +214,9 @@
     <Compile Include="Models\Avis.cs" />
     <Compile Include="Models\Categorie.cs" />
     <Compile Include="Models\Enchere.cs" />
+    <Compile Include="Models\Favori.cs" />
     <Compile Include="Models\Illustration.cs" />
+    <Compile Include="Models\Offre.cs" />
     <Compile Include="Models\Produit.cs" />
     <Compile Include="Models\TokenWallet.cs" />
     <Compile Include="Models\User.cs" />
@@ -317,6 +325,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202010191352320_MajModel3.resx">
       <DependentUpon>202010191352320_MajModel3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010201515596_MajModel4.resx">
+      <DependentUpon>202010201515596_MajModel4.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -9,14 +9,14 @@ using System.Xml.Serialization;
 
 namespace serveur.Models
 {
-    public class Enchere
+    public class Favori
     {
         [Key]
-        public int IdEnch { get; set; }
-        [Required(ErrorMessage = "Le champs date de début est obligatoire.")]
-        public DateTime DateDebut { get; set; }
-        [Required(ErrorMessage = "Le champs date de fin est obligatoire.")]
-        public DateTime DateFin { get; set; }
+        public int IdFavo { get; set; }
+        [ForeignKey("User")]
+        public int IdUser { get; set; }
+        [XmlIgnore, JsonIgnore]
+        public virtual User User { get; set; }
 
         [ForeignKey("Annonce")]
         public int IdAnno { get; set; }

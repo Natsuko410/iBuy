@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using System.Xml.Serialization;
 
 namespace serveur.Models
 {
@@ -16,5 +18,10 @@ namespace serveur.Models
          MaxLength(2048, ErrorMessage ="Ce champs ne peut pas excéder 2048 caractères")
         ]
         public string Path { get; set; }
+
+        [ForeignKey("Produit")]
+        public int IdProd { get; set; }
+        [XmlIgnore, JsonIgnore]
+        public virtual Produit Produit { get; set; }
     }
 }

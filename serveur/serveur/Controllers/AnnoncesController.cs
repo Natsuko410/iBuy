@@ -64,13 +64,13 @@ namespace serveur.Controllers
 
                     break;
 
-                case "achat":
+                /*case "achat":
                     if (IdCat != 0)
                         Annonces = db.Annonces.Where(anno => anno.Etat == "vente" && anno.IsAchat == true && anno.Produit.IdCat == IdCat && anno.Produit.Nom.Contains(NomRecherche)).OrderBy(anno => anno.IdAnno).Skip(Limit * Offset).Take(Limit);
                     else
                         Annonces = db.Annonces.Where(anno => anno.Etat == "vente" && anno.IsAchat == true && anno.Produit.Nom.Contains(NomRecherche)).OrderBy(anno => anno.IdAnno).Skip(Limit * Offset).Take(Limit);
                     
-                    break;
+                    break;*/
 
                 default:
                     if (IdCat != 0)
