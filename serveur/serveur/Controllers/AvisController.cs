@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using SecureAPIExemple.Services;
 using serveur.Data;
 using serveur.Models;
 
@@ -38,16 +39,26 @@ namespace serveur.Controllers
 
         // PUT: api/Avis/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutAvis(int id, Avis avis)
+        public IHttpActionResult PutAvis([FromUri] int id, [FromBody] Avis avis)
         {
+
+            // Checks token validity
+            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+            if (IdUser.Equals(-1) || IdUser != avis.IdUser)
+            {
+                return Unauthorized();
+            }
+
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
+                            + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                        );
             }
 
             if (id != avis.IdAvis)
             {
-                return BadRequest();
+                return BadRequest("L'identifiant de l'avis ne correspond pas avec l'identifiant donné.");
             }
 
             db.Entry(avis).State = EntityState.Modified;
@@ -68,6 +79,8 @@ namespace serveur.Controllers
                 }
             }
 
+            UpdateUserMoyenneNote(avis.IdConcerne);
+
             return StatusCode(HttpStatusCode.NoContent);
         }
 
@@ -75,31 +88,63 @@ namespace serveur.Controllers
         [ResponseType(typeof(Avis))]
         public IHttpActionResult PostAvis(Avis avis)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!TokenService.IsTokenValid(db.TokenWallets))
+                {
+                    return Unauthorized();
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
+                            + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                        );
+                }
+
+                db.Avis.Add(avis);
+                db.SaveChanges();
+
+                UpdateUserMoyenneNote(avis.IdConcerne);
+
+                return CreatedAtRoute("DefaultApi", new { id = avis.IdAvis }, avis);
+            } 
+            catch
+            {
+                return InternalServerError();
             }
-
-            db.Avis.Add(avis);
-            db.SaveChanges();
-
-            return CreatedAtRoute("DefaultApi", new { id = avis.IdAvis }, avis);
         }
 
         // DELETE: api/Avis/5
         [ResponseType(typeof(Avis))]
         public IHttpActionResult DeleteAvis(int id)
         {
-            Avis avis = db.Avis.Find(id);
-            if (avis == null)
+            try
             {
-                return NotFound();
+                Avis avis = db.Avis.Find(id);
+                if (avis == null)
+                {
+                    return NotFound();
+                }
+
+                // Checks token validity
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1) || IdUser != avis.IdUser)
+                {
+                    return Unauthorized();
+                }
+
+                db.Avis.Remove(avis);
+                db.SaveChanges();
+
+                UpdateUserMoyenneNote(avis.IdConcerne);
+
+                return Ok(avis);
             }
-
-            db.Avis.Remove(avis);
-            db.SaveChanges();
-
-            return Ok(avis);
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -114,6 +159,31 @@ namespace serveur.Controllers
         private bool AvisExists(int id)
         {
             return db.Avis.Count(e => e.IdAvis == id) > 0;
+        }
+
+        private void UpdateUserMoyenneNote(int id)
+        {
+            User user = db.Users.Find(id);
+            if (user == null)
+            {
+                return;
+            }
+
+            double TotalNote = db.Avis.Sum(a => a.IdConcerne == id ? a.Note : 0);
+            int TotalAvis = db.Avis.Count(a => a.IdConcerne == id);
+            user.MoyenneNote = TotalNote / TotalAvis;
+
+            db.Entry(user).State = EntityState.Modified;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return;
+            }
+
         }
     }
 }
