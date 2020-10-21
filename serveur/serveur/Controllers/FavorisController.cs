@@ -5,9 +5,10 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
+using SecureAPIExemple.Services;
 using serveur.Data;
 using serveur.Models;
 
@@ -27,61 +28,110 @@ namespace serveur.Controllers
         [ResponseType(typeof(Favori))]
         public IHttpActionResult GetFavori(int id)
         {
-            Favori favori = db.Favoris.Find(id);
-            if (favori == null)
+            try
             {
-                return NotFound();
-            }
+                // Checks token validity
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1))
+                {
+                    return BadRequest("Vous n'avez pas accès à cette page.");
+                }
 
-            return Ok(favori);
+                Favori favori = db.Favoris.Find(id);
+                if (favori == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(favori);
+            }
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         // PUT: api/Favoris/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutFavori(int id, Favori favori)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != favori.IdFavo)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(favori).State = EntityState.Modified;
-
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FavoriExists(id))
+                if (!ModelState.IsValid)
                 {
-                    return NotFound();
+                    return BadRequest(ModelState);
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return StatusCode(HttpStatusCode.NoContent);
+                // Checks token validity
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1))
+                {
+                    return BadRequest("Vous n'avez pas accès à cette page.");
+                }
+
+                if (id != favori.IdFavo)
+                {
+                    return BadRequest();
+                }
+
+                db.Entry(favori).State = EntityState.Modified;
+
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!FavoriExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return StatusCode(HttpStatusCode.NoContent);
+            }catch
+            {
+                return InternalServerError();
+            }
         }
+
+            
 
         // POST: api/Favoris
         [ResponseType(typeof(Favori))]
         public IHttpActionResult PostFavori(Favori favori)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            db.Favoris.Add(favori);
-            db.SaveChanges();
+                // Checks token validity
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1))
+                {
+                    return BadRequest("Vous n'avez pas accès à cette page.");
+                }
+
+                // Checks if this favori isn't already in the table 
+                if (db.Favoris.Count(u => u.IdUser.Equals(favori.IdUser) && u.IdAnno.Equals(favori.IdAnno)) > 0)
+                {
+                    return BadRequest("Ce favoris est déjà présent.");
+                }
+
+                db.Favoris.Add(favori);
+                db.SaveChanges();
+            }catch
+            {
+                return InternalServerError();
+            }
+            
 
             return CreatedAtRoute("DefaultApi", new { id = favori.IdFavo }, favori);
         }
@@ -90,16 +140,31 @@ namespace serveur.Controllers
         [ResponseType(typeof(Favori))]
         public IHttpActionResult DeleteFavori(int id)
         {
-            Favori favori = db.Favoris.Find(id);
-            if (favori == null)
+            try
             {
-                return NotFound();
+                // Checks token validity
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1))
+                {
+                    return BadRequest("Vous n'avez pas accès à cette page.");
+                }
+
+                //Find favori
+                Favori favori = db.Favoris.Find(id);
+                if (favori == null)
+                {
+                    return NotFound();
+                }
+
+                db.Favoris.Remove(favori);
+                db.SaveChanges();
+
+                return Ok(favori);
             }
-
-            db.Favoris.Remove(favori);
-            db.SaveChanges();
-
-            return Ok(favori);
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         protected override void Dispose(bool disposing)
