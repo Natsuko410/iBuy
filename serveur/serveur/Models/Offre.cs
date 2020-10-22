@@ -17,6 +17,9 @@ namespace serveur.Models
         [Required(ErrorMessage = "Le champs montant est obligatoire.")]
         public double Montant { get; set; }
 
+        [Required(ErrorMessage = "Le champs état est obligatoire.")]
+
+
         [ForeignKey("User")]
         public int IdUser { get; set; }
         [XmlIgnore, JsonIgnore]

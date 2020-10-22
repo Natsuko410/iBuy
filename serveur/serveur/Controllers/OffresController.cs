@@ -8,10 +8,18 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using SecureAPIExemple.Services;
 using serveur.Data;
 using serveur.Models;
 
 namespace serveur.Controllers
+
+
+    // GET: api/Annonces
+    // ?montant=num                             montant de l'offre
+    // ?idUser=num                              id du user correspondant à l'offre 
+    // ?idEnchere=num                           id de l'enchère correspodant à l'offre
+ 
 {
     public class OffresController : ApiController
     {
@@ -25,9 +33,14 @@ namespace serveur.Controllers
 
         // GET: api/Offres/5
         [ResponseType(typeof(Offre))]
-        public IHttpActionResult GetOffre(int id)
+        public IHttpActionResult GetOffreByIdAnnonce([FromUri] int id)
         {
-            Offre offre = db.Offres.Find(id);
+            Annonce annonce = db.Annonces.Find(id);
+            if (annonce == null)
+            {
+                return NotFound();
+            }
+            IQueryable<Offre> offre = db.Offres.Where(offreBis => offreBis.Enchere.IdAnno == id);
             if (offre == null)
             {
                 return NotFound();
@@ -36,16 +49,27 @@ namespace serveur.Controllers
             return Ok(offre);
         }
 
+
         // PUT: api/Offres/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutOffre(int id, Offre offre)
+        public IHttpActionResult PutOffre([FromUri] int id, [FromBody] Offre offre)
         {
+            
+            // check Token
+            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+            if (IdUser.Equals(-1) || IdUser != offre.IdUser)
+            {
+                return Unauthorized();
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            
+            
 
-            if (id != offre.IdOffr)
+
+            if (id != offre.Enchere.IdAnno)
             {
                 return BadRequest();
             }
@@ -73,13 +97,18 @@ namespace serveur.Controllers
 
         // POST: api/Offres
         [ResponseType(typeof(Offre))]
-        public IHttpActionResult PostOffre(Offre offre)
+        public IHttpActionResult PostOffre([FromBody] Offre offre)
         {
+            IQueryable<Offre> Offredb = db.Offres.Where(off => off.Enchere.IdAnno == offre.Enchere.IdAnno);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
+            if ((DateTime.Compare(DateTime.Now, offre.Enchere.DateDebut) < 0) || (DateTime.Compare(DateTime.Now, offre.Enchere.DateFin) > 0))
+            {
+                return BadRequest();
+            }
+            
             db.Offres.Add(offre);
             db.SaveChanges();
 

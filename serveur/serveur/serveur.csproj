@@ -211,6 +211,14 @@
     <Compile Include="Migrations\202010201646398_MajModel5.Designer.cs">
       <DependentUpon>202010201646398_MajModel5.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202010211213398_EmptyMigration.cs" />
+    <Compile Include="Migrations\202010211213398_EmptyMigration.Designer.cs">
+      <DependentUpon>202010211213398_EmptyMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010211455055_EmptyMigration1.cs" />
+    <Compile Include="Migrations\202010211455055_EmptyMigration1.Designer.cs">
+      <DependentUpon>202010211455055_EmptyMigration1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Achat.cs" />
     <Compile Include="Models\Acquisition.cs" />
@@ -335,6 +343,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202010201646398_MajModel5.resx">
       <DependentUpon>202010201646398_MajModel5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010211213398_EmptyMigration.resx">
+      <DependentUpon>202010211213398_EmptyMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010211455055_EmptyMigration1.resx">
+      <DependentUpon>202010211455055_EmptyMigration1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
