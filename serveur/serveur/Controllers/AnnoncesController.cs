@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
+using SecureAPIExemple.Services;
 using serveur.Data;
 using serveur.Models;
 
@@ -24,28 +25,105 @@ namespace serveur.Controllers
         // ?limit=num                           nb d'article par page
         // ?offset=num                          indice de la page 
         // ?typeDeVente=enchere                 type de vente
-        public IQueryable<Annonce> GetAnnonces([FromUri] int idCat = 0, [FromUri] int limit = 20, [FromUri] int offset = 0, [FromUri] String typeDeVente = "", [FromUri] String nomRecherche = "")
+        // ?idUser=num                          id d'un user
+        // ?etat:str                            l'état des ventes (vente, vendu, fini, ...)
+        public IQueryable<Annonce> GetAnnonces([FromUri] int idCat = 0, [FromUri] int limit = 20, [FromUri] int offset = 0, [FromUri] String typeDeVente = "", [FromUri] String nomRecherche = "", [FromUri] int idUser = 0, [FromUri] String etat = "vente")
         {
-            Uri Uri = Request.RequestUri;
             IQueryable<Annonce> Annonces = null;
 
-            switch (typeDeVente)
+            if (typeDeVente == "enchere")
             {
-                case "enchere":
-                    if (idCat != 0)
-                        Annonces = db.Annonces.Where(anno => anno.Etat == "vente" && anno.IsEnchere == true && anno.Produit.IdCat == idCat && anno.Produit.Nom.Contains(nomRecherche)).OrderBy(anno => anno.IdAnno).Skip(limit * offset).Take(limit);
+                if (idCat != 0)
+                {
+                    if (idUser != 0)
+                        Annonces = 
+                            db.Annonces.Where(anno => 
+                                anno.IsEnchere == true 
+                                && anno.IdUser == idUser 
+                                && anno.Produit.IdCat == idCat 
+                                && anno.Etat.Contains(etat) 
+                                && anno.Produit.Nom.Contains(nomRecherche)
+                            )
+                            .OrderBy(anno => anno.IdAnno)
+                            .Skip(limit * offset).Take(limit);
                     else
-                        Annonces = db.Annonces.Where(anno => anno.Etat == "vente" && anno.IsEnchere == true && anno.Produit.Nom.Contains(nomRecherche)).OrderBy(anno => anno.IdAnno).Skip(limit * offset).Take(limit);
-
-                    break;
-
-                default:
-                    if (idCat != 0)
-                        Annonces = db.Annonces.Where(anno => anno.Etat == "vente" && anno.Produit.IdCat == idCat && anno.Produit.Nom.Contains(nomRecherche)).OrderBy(anno => anno.IdAnno).Skip(limit * offset).Take(limit);
+                        Annonces = 
+                            db.Annonces.Where(anno => 
+                                anno.IsEnchere == true 
+                                && anno.Produit.IdCat == idCat 
+                                && anno.Etat.Contains(etat) 
+                                && anno.Produit.Nom.Contains(nomRecherche)
+                            )
+                            .OrderBy(anno => anno.IdAnno)
+                            .Skip(limit * offset).Take(limit);
+                }
+                else
+                {
+                    if (idUser != 0)
+                        Annonces = 
+                            db.Annonces.Where(anno => 
+                                anno.IsEnchere == true 
+                                && anno.IdUser == idUser 
+                                && anno.Etat.Contains(etat) 
+                                && anno.Produit.Nom.Contains(nomRecherche)
+                            )
+                            .OrderBy(anno => anno.IdAnno)
+                            .Skip(limit * offset).Take(limit);
+                    else 
+                        Annonces = 
+                            db.Annonces.Where(anno => 
+                                anno.IsEnchere == true 
+                                && anno.Etat.Contains(etat) 
+                                && anno.Produit.Nom.Contains(nomRecherche)
+                            )
+                            .OrderBy(anno => anno.IdAnno)
+                            .Skip(limit * offset).Take(limit);
+                }
+            } 
+            else 
+            {
+                if (idCat != 0)
+                {
+                    if (idUser != 0)
+                        Annonces = 
+                            db.Annonces.Where(anno => 
+                                anno.IdUser == idUser 
+                                && anno.Produit.IdCat == idCat 
+                                && anno.Etat.Contains(etat) 
+                                && anno.Produit.Nom.Contains(nomRecherche)
+                            )
+                            .OrderBy(anno => anno.IdAnno)
+                            .Skip(limit * offset).Take(limit);
                     else
-                        Annonces = db.Annonces.Where(anno => anno.Etat == "vente" && anno.Produit.Nom.Contains(nomRecherche)).OrderBy(anno => anno.IdAnno).Skip(limit * offset).Take(limit);
-
-                    break;
+                        Annonces = 
+                            db.Annonces.Where(anno => 
+                                anno.Produit.IdCat == idCat 
+                                && anno.Etat.Contains(etat) 
+                                && anno.Produit.Nom.Contains(nomRecherche)
+                            )
+                            .OrderBy(anno => anno.IdAnno)
+                            .Skip(limit * offset).Take(limit);
+                }
+                else
+                {
+                    if (idUser != 0)
+                        Annonces = 
+                            db.Annonces.Where(anno => 
+                                anno.IdUser == idUser 
+                                && anno.Etat.Contains(etat) 
+                                && anno.Produit.Nom.Contains(nomRecherche)
+                            )
+                            .OrderBy(anno => anno.IdAnno)
+                            .Skip(limit * offset).Take(limit);
+                    else
+                        Annonces = 
+                            db.Annonces.Where(anno => 
+                                anno.Etat.Contains(etat) 
+                                && anno.Produit.Nom.Contains(nomRecherche)
+                            )
+                            .OrderBy(anno => anno.IdAnno)
+                            .Skip(limit * offset).Take(limit);
+                }
             }
 
             return Annonces;
@@ -66,16 +144,25 @@ namespace serveur.Controllers
 
         // PUT: api/Annonces/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutAnnonce(int id, Annonce annonce)
+        public IHttpActionResult PutAnnonce([FromUri] int id,[FromBody] Annonce annonce)
         {
+            // Checks token validity
+            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+            if (IdUser.Equals(-1) || IdUser != annonce.IdUser)
+            {
+                return Unauthorized();
+            }
+
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
+                            + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                        );
             }
 
             if (id != annonce.IdAnno)
             {
-                return BadRequest();
+                return BadRequest("L'identifiant de l'avis ne correspond pas avec l'identifiant donné.");
             }
 
             db.Entry(annonce).State = EntityState.Modified;
@@ -95,7 +182,6 @@ namespace serveur.Controllers
                     throw;
                 }
             }
-
             return StatusCode(HttpStatusCode.NoContent);
         }
 
@@ -103,6 +189,13 @@ namespace serveur.Controllers
         [ResponseType(typeof(Annonce))]
         public IHttpActionResult PostAnnonce(Annonce annonce)
         {
+            // Checks token validity
+            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+            if (IdUser.Equals(-1) || IdUser != annonce.IdUser)
+            {
+                return Unauthorized();
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -119,6 +212,14 @@ namespace serveur.Controllers
         public IHttpActionResult DeleteAnnonce(int id)
         {
             Annonce annonce = db.Annonces.Find(id);
+            
+            // Checks token validity
+            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+            if (IdUser.Equals(-1) || IdUser != annonce.IdUser)
+            {
+                return Unauthorized();
+            }
+
             if (annonce == null)
             {
                 return NotFound();
