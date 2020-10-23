@@ -44,9 +44,14 @@ namespace serveur.Controllers
 
             // Checks token validity
             int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-            if (IdUser.Equals(-1) || IdUser != avis.IdUser)
+            if (IdUser.Equals(-1))
             {
                 return Unauthorized();
+            }
+
+            if (IdUser == avis.IdConcerne)
+            {
+                return BadRequest("Un User ne peut pas donner un avis sur lui-même");
             }
 
             if (!ModelState.IsValid)
@@ -56,9 +61,19 @@ namespace serveur.Controllers
                         );
             }
 
+            if (IdUser != avis.IdUser)
+            {
+                return Unauthorized();
+            }
+
             if (id != avis.IdAvis)
             {
                 return BadRequest("L'identifiant de l'avis ne correspond pas avec l'identifiant donné.");
+            }
+
+            if (db.Avis.Where(a => a.IdConcerne == avis.IdConcerne).Count(a => a.IdUser == avis.IdUser) > 1)
+            {
+                return BadRequest("Impossible de mettre deux avis sur le même user.");
             }
 
             db.Entry(avis).State = EntityState.Modified;
@@ -90,16 +105,33 @@ namespace serveur.Controllers
         {
             try
             {
-                if (!TokenService.IsTokenValid(db.TokenWallets))
+                // Checks token validity
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1))
                 {
                     return Unauthorized();
+                }
+
+                if (IdUser == avis.IdConcerne)
+                {
+                    return BadRequest("Un User ne peut pas donner un avis sur lui-même");
                 }
 
                 if (!ModelState.IsValid)
                 {
                     return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
-                            + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
-                        );
+                                + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                            );
+                }
+
+                if (IdUser != avis.IdUser)
+                {
+                    return Unauthorized();
+                }
+
+                if (db.Avis.Where(a => a.IdConcerne == avis.IdConcerne).Count(a => a.IdUser == avis.IdUser) > 1)
+                {
+                    return BadRequest("Impossible de mettre deux avis sur le même user.");
                 }
 
                 db.Avis.Add(avis);
