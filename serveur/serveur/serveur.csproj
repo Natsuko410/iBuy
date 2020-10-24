@@ -216,6 +216,7 @@
     <Compile Include="Models\Annonce.cs" />
     <Compile Include="Models\Avis.cs" />
     <Compile Include="Models\Categorie.cs" />
+    <Compile Include="Models\DataAnnonce.cs" />
     <Compile Include="Models\Enchere.cs" />
     <Compile Include="Models\Favori.cs" />
     <Compile Include="Models\Illustration.cs" />

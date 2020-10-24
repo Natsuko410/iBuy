@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Mvc;
 using serveur.Data;
 using serveur.Models;
 using serveur.Services;
@@ -27,55 +30,32 @@ namespace serveur.Controllers
 
         // GET: api/Illustrations/5
         [ResponseType(typeof(Illustration))]
-        public IHttpActionResult GetIllustration(int id)
+        public HttpResponseMessage GetIllustration(int id)
         {
-            Illustration illustration = db.Illustrations.Find(id);
-            if (illustration == null)
+            Illustration Illustration = db.Illustrations.Find(id);
+            if (Illustration == null)
             {
-                return NotFound();
+                return Request.CreateResponse(HttpStatusCode.NotFound);
             }
 
-            return Ok(illustration);
+            var response = Request.CreateResponse(HttpStatusCode.OK);
+            var fileStream = new FileStream(HttpContext.Current.Server.MapPath(Illustration.Path), FileMode.Open, FileAccess.Read);
+            response.Content = new StreamContent(fileStream);
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+
+            return response;
         }
 
         // PUT: api/Illustrations/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutIllustration(int id, Illustration illustration)
+        public IHttpActionResult PutIllustration()
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != illustration.IdIllu)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(illustration).State = EntityState.Modified;
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!IllustrationExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
+            return Unauthorized();
         }
 
         // POST: api/Illustrations
         [ResponseType(typeof(Illustration[]))]
-        public IHttpActionResult PostIllustration([FromUri] int idAnno)
+        public IHttpActionResult PostIllustration(int id)
         {
             try
             {
@@ -84,9 +64,9 @@ namespace serveur.Controllers
                     return Unauthorized();
                 }
 
-                if (db.Annonces.Count(a => a.IdAnno.Equals(idAnno)) < 1)
+                if (db.Annonces.Count(a => a.IdAnno.Equals(id)) < 1)
                 {
-                    return BadRequest("Le produit spécifié n'existe pas.");
+                    return BadRequest("L'annonce spécifiée n'existe pas.");
                 }
 
                 List<Illustration> Illustrations = new List<Illustration>();
@@ -94,12 +74,12 @@ namespace serveur.Controllers
                 
                 foreach(string fileName in HttpRequest.Files)
                 {
-                    string Name = $"{idAnno}_{fileName}";
+                    string Name = $"{id}_{fileName}";
                     string physicalPath = $"~/Illustrations/{Name}";
 
                     Illustration Illustration = new Illustration
                     {
-                        IdAnno = idAnno,
+                        IdAnno = id,
                         Path = physicalPath
                     };
 
@@ -113,7 +93,7 @@ namespace serveur.Controllers
                 db.Illustrations.AddRange(Illustrations);
                 db.SaveChanges();
 
-                return CreatedAtRoute("DefaultApi", new { id = idAnno }, Illustrations);
+                return CreatedAtRoute("DefaultApi", new { Id = id }, Illustrations);
             }
             catch
             {
@@ -125,16 +105,30 @@ namespace serveur.Controllers
         [ResponseType(typeof(Illustration))]
         public IHttpActionResult DeleteIllustration(int id)
         {
-            Illustration illustration = db.Illustrations.Find(id);
-            if (illustration == null)
+            try
             {
-                return NotFound();
+                if (!TokenService.IsTokenValid(db.TokenWallets))
+                {
+                    return Unauthorized();
+                }
+
+                Illustration illustration = db.Illustrations.Find(id);
+                if (illustration == null)
+                {
+                    return NotFound();
+                }
+
+                File.Delete(HttpContext.Current.Server.MapPath(illustration.Path));
+
+                db.Illustrations.Remove(illustration);
+                db.SaveChanges();
+
+                return Ok(illustration);
             }
-
-            db.Illustrations.Remove(illustration);
-            db.SaveChanges();
-
-            return Ok(illustration);
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         protected override void Dispose(bool disposing)

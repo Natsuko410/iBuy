@@ -20,6 +20,7 @@ namespace serveur.Models
 
         [ForeignKey("Annonce")]
         public int IdAnno { get; set; }
+        [JsonIgnore, XmlIgnore]
         public virtual Annonce Annonce { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -27,7 +28,8 @@ namespace serveur.Controllers
         // ?typeDeVente=enchere                 type de vente
         // ?idUser=num                          id d'un user
         // ?etat:str                            l'état des ventes (vente, vendu, fini, ...)
-        public IQueryable<Annonce> GetAnnonces([FromUri] int idCat = 0, [FromUri] int limit = 20, [FromUri] int offset = 0, [FromUri] String typeDeVente = "", [FromUri] String nomRecherche = "", [FromUri] int idUser = 0, [FromUri] String etat = "vente")
+        [ResponseType(typeof(DataAnnonce[]))]
+        public IHttpActionResult GetAnnonces([FromUri] int idCat = 0, [FromUri] int limit = 20, [FromUri] int offset = 0, [FromUri] String typeDeVente = "", [FromUri] String nomRecherche = "", [FromUri] int idUser = 0, [FromUri] String etat = "vente")
         {
             IQueryable<Annonce> Annonces = null;
 
@@ -126,20 +128,54 @@ namespace serveur.Controllers
                 }
             }
 
-            return Annonces;
+            string BaseUrl = HttpContext.Current.Request.Url.AbsoluteUri;
+            List<DataAnnonce> DataAnnonces = new List<DataAnnonce>();
+            
+            foreach(Annonce annonce in Annonces)
+            {
+                List<string> IllustrationsUrl = new List<string>();
+                IQueryable<Illustration> Illustrations = db.Illustrations.Where(i => i.IdAnno == annonce.IdAnno);
+
+                foreach (Illustration illustration in Illustrations)
+                {
+                    IllustrationsUrl.Add($"{BaseUrl}/api/Illustrations?idIllu={illustration.IdIllu}");
+                }
+
+                DataAnnonces.Add(new DataAnnonce
+                {
+                    Annonce = annonce,
+                    UrlIllustrations = IllustrationsUrl.ToArray()
+                });
+
+            }
+
+            return Ok(DataAnnonces);
         }
 
         // GET: api/Annonces/5
-        [ResponseType(typeof(Annonce))]
+        [ResponseType(typeof(DataAnnonce))]
         public IHttpActionResult GetAnnonce(int id)
         {
-            Annonce annonce = db.Annonces.Find(id);
-            if (annonce == null)
+            Annonce Annonce = db.Annonces.Find(id);
+            if (Annonce == null)
             {
                 return NotFound();
             }
 
-            return Ok(annonce);
+            string BaseUrl = HttpContext.Current.Request.Url.AbsoluteUri;
+            List<string> IllustrationsUrl = new List<string>();
+            IQueryable<Illustration> Illustrations = db.Illustrations.Where(i => i.IdAnno == id);
+
+            foreach (Illustration illustration in Illustrations)
+            {
+                IllustrationsUrl.Add($"{BaseUrl}/api/Illustrations?idIllu={illustration.IdIllu}");
+            }
+
+            return Ok(new DataAnnonce 
+            {
+                Annonce = Annonce,
+                UrlIllustrations = IllustrationsUrl.ToArray()
+            });
         }
 
         // PUT: api/Annonces/5
@@ -220,24 +256,38 @@ namespace serveur.Controllers
         [ResponseType(typeof(Annonce))]
         public IHttpActionResult DeleteAnnonce(int id)
         {
-            Annonce annonce = db.Annonces.Find(id);
-
-            // Checks token validity
-            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-            if (IdUser.Equals(-1) || IdUser != annonce.IdUser)
+            try
             {
-                return Unauthorized();
-            }
+                Annonce annonce = db.Annonces.Find(id);
 
-            if (annonce == null)
+                // Checks token validity
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1) || IdUser != annonce.IdUser)
+                {
+                    return Unauthorized();
+                }
+
+                if (annonce == null)
+                {
+                    return NotFound();
+                }
+
+                IQueryable<Illustration> Illustrations = db.Illustrations.Where(i => i.IdAnno == annonce.IdAnno);
+
+                foreach(Illustration illustration in Illustrations)
+                {
+                    File.Delete(HttpContext.Current.Server.MapPath(illustration.Path));
+                }
+
+                db.Annonces.Remove(annonce);
+                db.SaveChanges();
+
+                return Ok(annonce);
+            }
+            catch
             {
-                return NotFound();
+                return InternalServerError();
             }
-
-            db.Annonces.Remove(annonce);
-            db.SaveChanges();
-
-            return Ok(annonce);
         }
 
         protected override void Dispose(bool disposing)
