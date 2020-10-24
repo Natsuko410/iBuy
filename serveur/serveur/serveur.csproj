@@ -171,7 +171,6 @@
     <Compile Include="Controllers\OffresController.cs" />
     <Compile Include="Controllers\TokenWalletsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Data\IBuyContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
