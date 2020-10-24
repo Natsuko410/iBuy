@@ -10,6 +10,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using serveur.Data;
 using serveur.Models;
+using serveur.Services;
 
 namespace serveur.Controllers
 {
@@ -75,6 +76,14 @@ namespace serveur.Controllers
         [ResponseType(typeof(Categorie))]
         public IHttpActionResult PostCategorie(Categorie categorie)
         {
+            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+            User user = db.Users.Find(IdUser);
+
+            if (IdUser.Equals(-1) || user.IsAdmin == false)
+            {
+                return Unauthorized();
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
