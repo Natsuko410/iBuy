@@ -26,21 +26,16 @@ namespace serveur.Controllers
         private IBuyContext db = new IBuyContext();
 
         // GET: api/Offres
-        public IQueryable<Offre> GetOffres()
+        public IQueryable<Offre> GetOffres([FromUri] int idEnch)
         {
-            return db.Offres;
+            return db.Offres.Where(offre => offre.IdEnch == idEnch);
         }
 
         // GET: api/Offres/5
         [ResponseType(typeof(Offre))]
-        public IHttpActionResult GetOffreByIdAnnonce([FromUri] int id)
+        public IHttpActionResult GetOffre(int id)
         {
-            Annonce annonce = db.Annonces.Find(id);
-            if (annonce == null)
-            {
-                return NotFound();
-            }
-            IQueryable<Offre> offre = db.Offres.Where(offreBis => offreBis.Enchere.IdAnno == id);
+            Offre offre = db.Offres.Find(id);
             if (offre == null)
             {
                 return NotFound();
@@ -49,57 +44,24 @@ namespace serveur.Controllers
             return Ok(offre);
         }
 
-
         // PUT: api/Offres/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutOffre([FromUri] int id, [FromBody] Offre offre)
+        public IHttpActionResult PutOffre(int id, Offre offre)
         {
-            
-            // check Token
-            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-            if (IdUser.Equals(-1) || IdUser != offre.IdUser)
-            {
-                return Unauthorized();
-            }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            
-            
-
-
-            if (id != offre.Enchere.IdAnno)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(offre).State = EntityState.Modified;
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OffreExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
+            return Unauthorized();
         }
 
         // POST: api/Offres
         [ResponseType(typeof(Offre))]
         public IHttpActionResult PostOffre([FromBody] Offre offre)
         {
-            IQueryable<Offre> Offredb = db.Offres.Where(off => off.Enchere.IdAnno == offre.Enchere.IdAnno);
+            // Checks token validity
+            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+            if (IdUser.Equals(-1) || IdUser != offre.IdUser)
+            {
+                return Unauthorized();
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -108,7 +70,7 @@ namespace serveur.Controllers
             {
                 return BadRequest();
             }
-            
+
             db.Offres.Add(offre);
             db.SaveChanges();
 
@@ -123,6 +85,13 @@ namespace serveur.Controllers
             if (offre == null)
             {
                 return NotFound();
+            }
+            
+            // Checks token validity
+            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+            if (IdUser.Equals(-1) || IdUser != offre.IdUser)
+            {
+                return Unauthorized();
             }
 
             db.Offres.Remove(offre);
