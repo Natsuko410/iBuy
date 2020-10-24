@@ -6,10 +6,12 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using serveur.Data;
 using serveur.Models;
+using serveur.Services;
 
 namespace serveur.Controllers
 {
@@ -72,18 +74,51 @@ namespace serveur.Controllers
         }
 
         // POST: api/Illustrations
-        [ResponseType(typeof(Illustration))]
-        public IHttpActionResult PostIllustration(Illustration illustration)
+        [ResponseType(typeof(Illustration[]))]
+        public IHttpActionResult PostIllustration([FromUri] int idAnno)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!TokenService.IsTokenValid(db.TokenWallets))
+                {
+                    return Unauthorized();
+                }
+
+                if (db.Annonces.Count(a => a.IdAnno.Equals(idAnno)) < 1)
+                {
+                    return BadRequest("Le produit spécifié n'existe pas.");
+                }
+
+                List<Illustration> Illustrations = new List<Illustration>();
+                var HttpRequest = HttpContext.Current.Request;
+                
+                foreach(string fileName in HttpRequest.Files)
+                {
+                    string Name = $"{idAnno}_{fileName}";
+                    string physicalPath = $"~/Illustrations/{Name}";
+
+                    Illustration Illustration = new Illustration
+                    {
+                        IdAnno = idAnno,
+                        Path = physicalPath
+                    };
+
+                    HttpRequest.Files[fileName].SaveAs(
+                        HttpContext.Current.Server.MapPath(physicalPath)
+                    );
+
+                    Illustrations.Add(Illustration);
+                }
+
+                db.Illustrations.AddRange(Illustrations);
+                db.SaveChanges();
+
+                return CreatedAtRoute("DefaultApi", new { id = idAnno }, Illustrations);
             }
-
-            db.Illustrations.Add(illustration);
-            db.SaveChanges();
-
-            return CreatedAtRoute("DefaultApi", new { id = illustration.IdIllu }, illustration);
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         // DELETE: api/Illustrations/5

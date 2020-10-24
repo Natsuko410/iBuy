@@ -7,7 +7,7 @@ using System.Linq;
 using System.Web;
 using System.Web.WebPages;
 
-namespace SecureAPIExemple.Services
+namespace serveur.Services
 {
     public class TokenService
     {

@@ -9,9 +9,9 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
-using SecureAPIExemple.Services;
 using serveur.Data;
 using serveur.Models;
+using serveur.Services;
 
 namespace serveur.Controllers
 {
@@ -144,7 +144,7 @@ namespace serveur.Controllers
 
         // PUT: api/Annonces/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutAnnonce([FromUri] int id,[FromBody] Annonce annonce)
+        public IHttpActionResult PutAnnonce([FromUri] int id, [FromBody] Annonce annonce)
         {
             // Checks token validity
             int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
@@ -162,7 +162,7 @@ namespace serveur.Controllers
 
             if (id != annonce.IdAnno)
             {
-                return BadRequest("L'identifiant de l'avis ne correspond pas avec l'identifiant donné.");
+                return BadRequest("L'identifiant de l'annonce ne correspond pas avec l'identifiant donné.");
             }
 
             db.Entry(annonce).State = EntityState.Modified;
@@ -187,24 +187,33 @@ namespace serveur.Controllers
 
         // POST: api/Annonces
         [ResponseType(typeof(Annonce))]
-        public IHttpActionResult PostAnnonce(Annonce annonce)
+        public IHttpActionResult PostAnnonce([FromBody] Annonce annonce)
         {
-            // Checks token validity
-            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-            if (IdUser.Equals(-1) || IdUser != annonce.IdUser)
+            try
             {
-                return Unauthorized();
-            }
+                // Checks token validity
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1) || IdUser != annonce.IdUser)
+                {
+                    return Unauthorized();
+                }
 
-            if (!ModelState.IsValid)
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
+                                + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                            );
+                }
+
+                db.Annonces.Add(annonce);
+                db.SaveChanges();
+
+                return CreatedAtRoute("DefaultApi", new { id = annonce.IdAnno }, annonce);
+            }
+            catch
             {
-                return BadRequest(ModelState);
+                return InternalServerError();
             }
-
-            db.Annonces.Add(annonce);
-            db.SaveChanges();
-
-            return CreatedAtRoute("DefaultApi", new { id = annonce.IdAnno }, annonce);
         }
 
         // DELETE: api/Annonces/5
@@ -212,7 +221,7 @@ namespace serveur.Controllers
         public IHttpActionResult DeleteAnnonce(int id)
         {
             Annonce annonce = db.Annonces.Find(id);
-            
+
             // Checks token validity
             int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
             if (IdUser.Equals(-1) || IdUser != annonce.IdUser)
