@@ -62,6 +62,8 @@ namespace serveur.Controllers
                 {
                     return BadRequest("L'identifiant fourni n'est pas correct.");
                 }
+                user.IsAdmin = false;
+
 
                 db.Entry(user).State = EntityState.Modified;
 
@@ -107,6 +109,7 @@ namespace serveur.Controllers
                 {
                     return BadRequest("Ce pseudo est déjà utilisé.");
                 }
+                user.IsAdmin = false;
 
                 // Hash password before saving
                 user.Mdp = BCrypt.HashPassword(user.Mdp, BCrypt.GenerateSalt());

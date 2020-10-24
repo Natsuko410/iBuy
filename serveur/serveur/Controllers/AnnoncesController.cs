@@ -36,23 +36,23 @@ namespace serveur.Controllers
                 if (idCat != 0)
                 {
                     if (idUser != 0)
-                        Annonces = 
-                            db.Annonces.Where(anno => 
-                                anno.IsEnchere == true 
-                                && anno.IdUser == idUser 
-                                && anno.Produit.IdCat == idCat 
-                                && anno.Etat.Contains(etat) 
-                                && anno.Produit.Nom.Contains(nomRecherche)
+                        Annonces =
+                            db.Annonces.Where(anno =>
+                                anno.IsEnchere == true
+                                && anno.IdUser == idUser
+                                && anno.IdCat == idCat
+                                && anno.EtatAnno.Contains(etat)
+                                && anno.NomProd.Contains(nomRecherche)
                             )
                             .OrderBy(anno => anno.IdAnno)
                             .Skip(limit * offset).Take(limit);
                     else
-                        Annonces = 
-                            db.Annonces.Where(anno => 
-                                anno.IsEnchere == true 
-                                && anno.Produit.IdCat == idCat 
-                                && anno.Etat.Contains(etat) 
-                                && anno.Produit.Nom.Contains(nomRecherche)
+                        Annonces =
+                            db.Annonces.Where(anno =>
+                                anno.IsEnchere == true
+                                && anno.IdCat == idCat
+                                && anno.EtatAnno.Contains(etat)
+                                && anno.NomProd.Contains(nomRecherche)
                             )
                             .OrderBy(anno => anno.IdAnno)
                             .Skip(limit * offset).Take(limit);
@@ -60,46 +60,46 @@ namespace serveur.Controllers
                 else
                 {
                     if (idUser != 0)
-                        Annonces = 
-                            db.Annonces.Where(anno => 
-                                anno.IsEnchere == true 
-                                && anno.IdUser == idUser 
-                                && anno.Etat.Contains(etat) 
-                                && anno.Produit.Nom.Contains(nomRecherche)
+                        Annonces =
+                            db.Annonces.Where(anno =>
+                                anno.IsEnchere == true
+                                && anno.IdUser == idUser
+                                && anno.EtatAnno.Contains(etat)
+                                && anno.NomProd.Contains(nomRecherche)
                             )
                             .OrderBy(anno => anno.IdAnno)
                             .Skip(limit * offset).Take(limit);
-                    else 
-                        Annonces = 
-                            db.Annonces.Where(anno => 
-                                anno.IsEnchere == true 
-                                && anno.Etat.Contains(etat) 
-                                && anno.Produit.Nom.Contains(nomRecherche)
+                    else
+                        Annonces =
+                            db.Annonces.Where(anno =>
+                                anno.IsEnchere == true
+                                && anno.EtatAnno.Contains(etat)
+                                && anno.NomProd.Contains(nomRecherche)
                             )
                             .OrderBy(anno => anno.IdAnno)
                             .Skip(limit * offset).Take(limit);
                 }
-            } 
-            else 
+            }
+            else
             {
                 if (idCat != 0)
                 {
                     if (idUser != 0)
-                        Annonces = 
-                            db.Annonces.Where(anno => 
-                                anno.IdUser == idUser 
-                                && anno.Produit.IdCat == idCat 
-                                && anno.Etat.Contains(etat) 
-                                && anno.Produit.Nom.Contains(nomRecherche)
+                        Annonces =
+                            db.Annonces.Where(anno =>
+                                anno.IdUser == idUser
+                                && anno.IdCat == idCat
+                                && anno.EtatAnno.Contains(etat)
+                                && anno.NomProd.Contains(nomRecherche)
                             )
                             .OrderBy(anno => anno.IdAnno)
                             .Skip(limit * offset).Take(limit);
                     else
-                        Annonces = 
-                            db.Annonces.Where(anno => 
-                                anno.Produit.IdCat == idCat 
-                                && anno.Etat.Contains(etat) 
-                                && anno.Produit.Nom.Contains(nomRecherche)
+                        Annonces =
+                            db.Annonces.Where(anno =>
+                                anno.IdCat == idCat
+                                && anno.EtatAnno.Contains(etat)
+                                && anno.NomProd.Contains(nomRecherche)
                             )
                             .OrderBy(anno => anno.IdAnno)
                             .Skip(limit * offset).Take(limit);
@@ -107,19 +107,19 @@ namespace serveur.Controllers
                 else
                 {
                     if (idUser != 0)
-                        Annonces = 
-                            db.Annonces.Where(anno => 
-                                anno.IdUser == idUser 
-                                && anno.Etat.Contains(etat) 
-                                && anno.Produit.Nom.Contains(nomRecherche)
+                        Annonces =
+                            db.Annonces.Where(anno =>
+                                anno.IdUser == idUser
+                                && anno.EtatAnno.Contains(etat)
+                                && anno.NomProd.Contains(nomRecherche)
                             )
                             .OrderBy(anno => anno.IdAnno)
                             .Skip(limit * offset).Take(limit);
                     else
-                        Annonces = 
-                            db.Annonces.Where(anno => 
-                                anno.Etat.Contains(etat) 
-                                && anno.Produit.Nom.Contains(nomRecherche)
+                        Annonces =
+                            db.Annonces.Where(anno =>
+                                anno.EtatAnno.Contains(etat)
+                                && anno.NomProd.Contains(nomRecherche)
                             )
                             .OrderBy(anno => anno.IdAnno)
                             .Skip(limit * offset).Take(limit);

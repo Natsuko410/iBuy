@@ -14,14 +14,12 @@ namespace serveur.Models
         [Key]
         public int IdIllu { get; set; }
         [
-         Required(ErrorMessage = "Le champs path est obligatoire."),
          MaxLength(2048, ErrorMessage ="Ce champs ne peut pas excéder 2048 caractères")
         ]
         public string Path { get; set; }
 
-        [ForeignKey("Produit")]
-        public int IdProd { get; set; }
-        [XmlIgnore, JsonIgnore]
-        public virtual Produit Produit { get; set; }
+        [ForeignKey("Annonce")]
+        public int IdAnno { get; set; }
+        public virtual Annonce Annonce { get; set; }
     }
 }

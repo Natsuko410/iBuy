@@ -161,8 +161,6 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
-    <Compile Include="Controllers\AchatsController.cs" />
-    <Compile Include="Controllers\AcquisitionsController.cs" />
     <Compile Include="Controllers\AnnoncesController.cs" />
     <Compile Include="Controllers\AvisController.cs" />
     <Compile Include="Controllers\CategoriesController.cs" />
@@ -171,7 +169,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IllustrationsController.cs" />
     <Compile Include="Controllers\OffresController.cs" />
-    <Compile Include="Controllers\ProduitsController.cs" />
     <Compile Include="Controllers\TokenWalletsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
@@ -211,9 +208,11 @@
     <Compile Include="Migrations\202010201646398_MajModel5.Designer.cs">
       <DependentUpon>202010201646398_MajModel5.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202010241352322_MajModel6.cs" />
+    <Compile Include="Migrations\202010241352322_MajModel6.Designer.cs">
+      <DependentUpon>202010241352322_MajModel6.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\Achat.cs" />
-    <Compile Include="Models\Acquisition.cs" />
     <Compile Include="Models\Annonce.cs" />
     <Compile Include="Models\Avis.cs" />
     <Compile Include="Models\Categorie.cs" />
@@ -221,7 +220,6 @@
     <Compile Include="Models\Favori.cs" />
     <Compile Include="Models\Illustration.cs" />
     <Compile Include="Models\Offre.cs" />
-    <Compile Include="Models\Produit.cs" />
     <Compile Include="Models\TokenWallet.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -335,6 +333,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202010201646398_MajModel5.resx">
       <DependentUpon>202010201646398_MajModel5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010241352322_MajModel6.resx">
+      <DependentUpon>202010241352322_MajModel6.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

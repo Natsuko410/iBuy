@@ -27,19 +27,35 @@ namespace serveur.Models
          Required(ErrorMessage = "Le champs état est obligatoire."),
          MaxLength(32, ErrorMessage = "ce champs ne peut pas excédé 32 caractères.")
         ]
-        public string Etat { get; set; }
-        [Required(ErrorMessage ="Le champs est une enchère est obligatoire.")]
+        public string EtatAnno { get; set; }
+
+        [Required(ErrorMessage = "Le champs est une enchère est obligatoire.")]
         public bool IsEnchere { get; set; }
+
+
+        [
+         Required(ErrorMessage = "Le champs nom est obligatoire."),
+         MaxLength(512, ErrorMessage = "ce champs ne peut pas excédé 512 caractères.")
+        ]
+        public string NomProd { get; set; }
+        [
+         MaxLength(1024, ErrorMessage = "ce champs ne peut pas excédé 1024 caractères.")
+        ]
+        public string DescriptionProd { get; set; }
+        [
+         Required(ErrorMessage = "Le champs nom est obligatoire."),
+         MaxLength(56, ErrorMessage = "ce champs ne peut pas excédé 56 caractères.")
+        ]
+        public string EtatProd { get; set; }
+
+        [ForeignKey("Categorie")]
+        public int? IdCat { get; set; }
+        public virtual Categorie Categorie { get; set; }
 
         [ForeignKey("User")]
         public int? IdUser { get; set; }
         [XmlIgnore, JsonIgnore]
         public virtual User User { get; set; }
-
-        [ForeignKey("Produit")]
-        public int IdProd { get; set; }
-        [XmlIgnore, JsonIgnore]
-        public virtual Produit Produit { get; set; }
 
     }
 }

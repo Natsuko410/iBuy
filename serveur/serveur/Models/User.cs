@@ -73,5 +73,10 @@ namespace serveur.Models
         ]
         public string AddrNumero { get; set; }
 
+        [
+            DefaultValue(false),
+        ]
+        public bool IsAdmin { get; set; }
+
     }
 }
