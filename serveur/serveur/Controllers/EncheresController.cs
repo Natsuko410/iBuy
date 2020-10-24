@@ -10,6 +10,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using serveur.Data;
 using serveur.Models;
+using serveur.Services;
 
 namespace serveur.Controllers
 {
@@ -40,14 +41,53 @@ namespace serveur.Controllers
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEnchere(int id, Enchere enchere)
         {
+            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+            if (IdUser.Equals(-1))
+            {
+                return Unauthorized();
+            }
+
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
+                            + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                        );
+            }
+
+            if (IdUser != enchere.Annonce.IdUser)
+            {
+                return BadRequest("L'identifiant ne correspond pas avec l'id de propriétaire de cette annonce.");
             }
 
             if (id != enchere.IdEnch)
             {
-                return BadRequest();
+                return BadRequest("L'identifiant ne correspond pas avec l'enchère spécifiée.");
+            }
+
+            if (enchere.DateDebut < DateTime.Now)
+            {
+                return BadRequest("La date de début ne peut pas être inférieure à la date actuelle.");
+            }
+
+            if (enchere.DateFin < DateTime.Now)
+            {
+                return BadRequest("La date de fin ne peut pas être inférieure à la date actuelle.");
+            }
+
+            if (enchere.DateFin <= enchere.DateDebut)
+            {
+                return BadRequest("La date de début ne peut pas être inférieure ou égale à la date de fin.");
+            }
+
+            Enchere EnchereDb = db.Encheres.Find(id);
+            if (EnchereDb == null)
+            {
+                return BadRequest("Cette enchère n'existe pas.");
+            }
+
+            if (DateTime.Now > EnchereDb.DateDebut || DateTime.Now > EnchereDb.DateFin)
+            {
+                return BadRequest("Cette enchère a déjà débuté ou est déjà terminée.");
             }
 
             db.Entry(enchere).State = EntityState.Modified;
@@ -75,9 +115,37 @@ namespace serveur.Controllers
         [ResponseType(typeof(Enchere))]
         public IHttpActionResult PostEnchere(Enchere enchere)
         {
+            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+            if (IdUser.Equals(-1))
+            {
+                return Unauthorized();
+            }
+
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
+                            + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                        );
+            }
+
+            if (IdUser != enchere.Annonce.IdUser)
+            {
+                return Unauthorized();
+            }
+
+            if (enchere.DateDebut < DateTime.Now)
+            {
+                return BadRequest("La date de début ne peut pas être inférieure à la date actuelle.");
+            }
+
+            if (enchere.DateFin < DateTime.Now)
+            {
+                return BadRequest("La date de fin ne peut pas être inférieure à la date actuelle.");
+            }
+
+            if (enchere.DateFin < enchere.DateDebut)
+            {
+                return BadRequest("La date de début ne peut pas être inférieure à la date de fin.");
             }
 
             db.Encheres.Add(enchere);
@@ -90,10 +158,22 @@ namespace serveur.Controllers
         [ResponseType(typeof(Enchere))]
         public IHttpActionResult DeleteEnchere(int id)
         {
+
+            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+            if (IdUser.Equals(-1))
+            {
+                return Unauthorized();
+            }
+
             Enchere enchere = db.Encheres.Find(id);
             if (enchere == null)
             {
                 return NotFound();
+            }
+
+            if (IdUser != enchere.Annonce.IdUser)
+            {
+                return Unauthorized();
             }
 
             db.Encheres.Remove(enchere);
