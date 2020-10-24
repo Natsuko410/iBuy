@@ -184,7 +184,7 @@ namespace serveur.Controllers
         {
             // Checks token validity
             int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-            if (IdUser.Equals(-1) || IdUser != annonce.IdUser)
+            if (IdUser.Equals(-1))
             {
                 return Unauthorized();
             }
@@ -194,6 +194,11 @@ namespace serveur.Controllers
                 return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
                             + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
                         );
+            }
+
+            if (IdUser != annonce.IdUser)
+            {
+                return Unauthorized();
             }
 
             if (id != annonce.IdAnno)
@@ -229,7 +234,7 @@ namespace serveur.Controllers
             {
                 // Checks token validity
                 int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-                if (IdUser.Equals(-1) || IdUser != annonce.IdUser)
+                if (IdUser.Equals(-1))
                 {
                     return Unauthorized();
                 }
@@ -239,6 +244,11 @@ namespace serveur.Controllers
                     return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
                                 + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
                             );
+                }
+
+                if (IdUser != annonce.IdUser)
+                {
+                    return Unauthorized();
                 }
 
                 db.Annonces.Add(annonce);

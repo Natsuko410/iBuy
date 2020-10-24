@@ -40,7 +40,7 @@ namespace serveur.Controllers
 
         // GET: api/Favoris/5
         [ResponseType(typeof(Favori))]
-        public IHttpActionResult GetFavori([FromUri] int id)
+        public IHttpActionResult GetFavori(int id)
         {
             try
             {
@@ -152,9 +152,9 @@ namespace serveur.Controllers
             base.Dispose(disposing);
         }
 
-        /*private bool FavoriExists(int id)
+        private bool FavoriExists(int id)
         {
             return db.Favoris.Count(e => e.IdFavo == id) > 0;
-        }*/
+        }
     }
 }

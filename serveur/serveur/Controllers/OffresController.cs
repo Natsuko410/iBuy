@@ -12,15 +12,8 @@ using serveur.Data;
 using serveur.Models;
 using serveur.Services;
 
-namespace serveur.Controllers
+namespace serveur.Controllers {
 
-
-    // GET: api/Annonces
-    // ?montant=num                             montant de l'offre
-    // ?idUser=num                              id du user correspondant à l'offre 
-    // ?idEnchere=num                           id de l'enchère correspodant à l'offre
- 
-{
     public class OffresController : ApiController
     {
         private IBuyContext db = new IBuyContext();
@@ -46,7 +39,7 @@ namespace serveur.Controllers
 
         // PUT: api/Offres/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutOffre(int id, Offre offre)
+        public IHttpActionResult PutOffre()
         {
             return Unauthorized();
         }
@@ -57,7 +50,7 @@ namespace serveur.Controllers
         {
             // Checks token validity
             int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-            if (IdUser.Equals(-1) || IdUser != offre.IdUser)
+            if (IdUser.Equals(-1))
             {
                 return Unauthorized();
             }
@@ -66,6 +59,12 @@ namespace serveur.Controllers
             {
                 return BadRequest(ModelState);
             }
+
+            if (IdUser != offre.IdUser)
+            {
+                return Unauthorized();
+            }
+
             if ((DateTime.Compare(DateTime.Now, offre.Enchere.DateDebut) < 0) || (DateTime.Compare(DateTime.Now, offre.Enchere.DateFin) > 0))
             {
                 return BadRequest();

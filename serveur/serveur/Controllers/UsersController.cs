@@ -49,21 +49,25 @@ namespace serveur.Controllers
         {
             try
             {
+                // Checks token validity
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1))
+                {
+                    return BadRequest("L'identifiant fourni n'est pas correct.");
+                }
+
                 if (!ModelState.IsValid)
                 {
                     return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
                             + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
                         );
                 }
-
-                // Checks token validity
-                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-                if (IdUser.Equals(-1) || IdUser != user.IdUser)
-                {
-                    return BadRequest("L'identifiant fourni n'est pas correct.");
-                }
                 user.IsAdmin = false;
 
+                if (IdUser != user.IdUser)
+                {
+                    return Unauthorized();
+                }
 
                 db.Entry(user).State = EntityState.Modified;
 
@@ -145,6 +149,11 @@ namespace serveur.Controllers
                 if (user == null)
                 {
                     return NotFound();
+                }
+
+                if (IdUser != user.IdUser)
+                {
+                    return Unauthorized();
                 }
 
                 db.Users.Remove(user);
