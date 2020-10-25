@@ -19,9 +19,9 @@ namespace serveur.Controllers {
         private IBuyContext db = new IBuyContext();
 
         // GET: api/Offres
-        public IQueryable<Offre> GetOffres([FromUri] int idEnch)
+        public IQueryable<Offre> GetOffres(int id)
         {
-            return db.Offres.Where(offre => offre.IdEnch == idEnch);
+            return db.Offres.Where(offre => offre.IdEnch == id);
         }
 
         // GET: api/Offres/5

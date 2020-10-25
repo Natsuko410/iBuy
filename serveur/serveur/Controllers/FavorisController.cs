@@ -74,7 +74,7 @@ namespace serveur.Controllers
 
         // POST: api/Favoris
         [ResponseType(typeof(Favori))]
-        public IHttpActionResult PostFavori([FromBody] Favori favori)
+        public IHttpActionResult PostFavori(Favori favori)
         {
             try
             {
@@ -99,17 +99,18 @@ namespace serveur.Controllers
 
                 db.Favoris.Add(favori);
                 db.SaveChanges();
+
+                return CreatedAtRoute("DefaultApi", new { id = favori.IdFavo }, favori);
+
             }catch
             {
                 return InternalServerError();
             }
-
-            return CreatedAtRoute("DefaultApi", new { id = favori.IdFavo }, favori);
         }
 
         // DELETE: api/Favoris/5
         [ResponseType(typeof(Favori))]
-        public IHttpActionResult DeleteFavori([FromUri] int id)
+        public IHttpActionResult DeleteFavori(int id)
         {
             try
             {

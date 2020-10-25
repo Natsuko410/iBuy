@@ -194,7 +194,7 @@ namespace serveur.Controllers
 
         // PUT: api/Annonces/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutAnnonce([FromUri] int id, [FromBody] Annonce annonce)
+        public IHttpActionResult PutAnnonce(int id, [FromBody] Annonce annonce)
         {
             try
             {

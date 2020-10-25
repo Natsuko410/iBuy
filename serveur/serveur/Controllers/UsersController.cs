@@ -43,7 +43,7 @@ namespace serveur.Controllers
             }
         }
 
-        // PUT: api/Users/5
+        // PUT: api/Users
         [ResponseType(typeof(void))]
         public IHttpActionResult PutUser([FromBody] User user)
         {
@@ -129,7 +129,7 @@ namespace serveur.Controllers
             return CreatedAtRoute("DefaultApi", new { id = user.IdUser }, user);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/Users
         [ResponseType(typeof(User))]
         public IHttpActionResult DeleteUser()
         {

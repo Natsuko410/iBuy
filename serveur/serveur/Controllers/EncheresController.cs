@@ -46,7 +46,7 @@ namespace serveur.Controllers
 
         // PUT: api/Encheres/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEnchere(int id, Enchere enchere)
+        public IHttpActionResult PutEnchere(int id, [FromBody] Enchere enchere)
         {
             try
             {
@@ -118,7 +118,7 @@ namespace serveur.Controllers
                     }
                     else
                     {
-                        throw;
+                        return InternalServerError();
                     }
                 }
 
@@ -149,7 +149,8 @@ namespace serveur.Controllers
                             );
                 }
 
-                if (IdUser != enchere.Annonce.IdUser)
+                Annonce Annonce = db.Annonces.Find(enchere.IdAnno);
+                if (IdUser != Annonce.IdUser)
                 {
                     return Unauthorized();
                 }
