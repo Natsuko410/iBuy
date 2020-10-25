@@ -39,7 +39,7 @@ namespace serveur.Controllers
 
         // PUT: api/Categories/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutCategorie(int id, Categorie categorie)
+        public IHttpActionResult PutCategorie(int id, [FromBody] Categorie categorie)
         {
             int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
             User user = db.Users.Find(IdUser);
@@ -89,7 +89,7 @@ namespace serveur.Controllers
 
         // POST: api/Categories
         [ResponseType(typeof(Categorie))]
-        public IHttpActionResult PostCategorie(Categorie categorie)
+        public IHttpActionResult PostCategorie([FromBody] Categorie categorie)
         {
             int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
             User user = db.Users.Find(IdUser);
