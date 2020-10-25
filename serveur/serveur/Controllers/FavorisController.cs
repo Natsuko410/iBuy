@@ -97,6 +97,8 @@ namespace serveur.Controllers
                     return BadRequest("Ce favoris est déjà présent.");
                 }
 
+                favori.Annonce = db.Annonces.Find(favori.IdAnno);
+
                 db.Favoris.Add(favori);
                 db.SaveChanges();
 

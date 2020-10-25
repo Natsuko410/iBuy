@@ -63,9 +63,10 @@ namespace serveur.Controllers
                             );
                 }
 
-                if (IdUser != enchere.Annonce.IdUser)
+                Annonce Annonce = db.Annonces.Find(enchere.IdAnno);
+                if (IdUser != Annonce.IdUser)
                 {
-                    return BadRequest("L'identifiant ne correspond pas avec l'id de propriétaire de cette annonce.");
+                    return BadRequest("L'identifiant ne correspond pas avec l'id du propriétaire de cette annonce.");
                 }
 
                 if (id != enchere.IdEnch)
@@ -93,7 +94,7 @@ namespace serveur.Controllers
                     return BadRequest("La date de début ne peut pas être inférieure ou égale à la date de fin.");
                 }
 
-                Enchere EnchereDb = db.Encheres.Find(id);
+                Enchere EnchereDb = db.Encheres.AsNoTracking().Where(e => e.IdEnch == id).FirstOrDefault();
                 if (EnchereDb == null)
                 {
                     return BadRequest("Cette enchère n'existe pas.");

@@ -19,9 +19,9 @@ namespace serveur.Controllers {
         private IBuyContext db = new IBuyContext();
 
         // GET: api/Offres
-        public IQueryable<Offre> GetOffres(int id)
+        public IQueryable<Offre> GetOffres([FromUri] int idEnch)
         {
-            return db.Offres.Where(offre => offre.IdEnch == id);
+            return db.Offres.Where(offre => offre.IdEnch == idEnch);
         }
 
         // GET: api/Offres/5
@@ -74,9 +74,31 @@ namespace serveur.Controllers {
                     return Unauthorized();
                 }
 
-                if ((DateTime.Compare(DateTime.Now, offre.Enchere.DateDebut) < 0) || (DateTime.Compare(DateTime.Now, offre.Enchere.DateFin) > 0))
+                Enchere enchere = db.Encheres.Find(offre.IdEnch);
+                if (enchere == null)
                 {
-                    return BadRequest();
+                    return BadRequest("Cette enchère n'existe pas.");
+                }
+
+                Annonce Annonce = db.Annonces.Find(enchere.IdAnno);
+                if (Annonce == null)
+                {
+                    return BadRequest("Cette annonce n'existe pas.");
+                }
+
+                if (DateTime.Compare(DateTime.Now, enchere.DateDebut) < 0)
+                {
+                    return BadRequest("Impossible de faire une offre avant que l'enchère ait débuté.");
+                }
+
+                if (DateTime.Compare(DateTime.Now, enchere.DateFin) > 0)
+                {
+                    return BadRequest("Impossible de faire une offre sur une enchère terminée.");
+                }
+
+                if (offre.Montant <= Annonce.MontantMin || offre.Montant <= db.Offres.Where(o => o.IdEnch == enchere.IdEnch).Max(e => e.Montant))
+                {
+                    return BadRequest("Impossible de proposer une offre inférieure ou égale au montant actuelle.");
                 }
 
                 db.Offres.Add(offre);
