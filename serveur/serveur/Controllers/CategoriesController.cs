@@ -28,63 +28,77 @@ namespace serveur.Controllers
         [ResponseType(typeof(Categorie))]
         public IHttpActionResult GetCategorie(int id)
         {
-            Categorie categorie = db.Categories.Find(id);
-            if (categorie == null)
+            try
             {
-                return NotFound();
-            }
+                Categorie categorie = db.Categories.Find(id);
+                if (categorie == null)
+                {
+                    return NotFound();
+                }
 
-            return Ok(categorie);
+                return Ok(categorie);
+            }
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         // PUT: api/Categories/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutCategorie(int id, [FromBody] Categorie categorie)
         {
-            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-            User user = db.Users.Find(IdUser);
-
-            if (IdUser.Equals(-1))
-            {
-                return Unauthorized();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
-                            + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
-                        );
-            }
-
-            if (user.IsAdmin == false)
-            {
-                return Unauthorized();
-            }
-
-            if (id != categorie.IdCat)
-            {
-                return BadRequest("L'identifiant ne correspond pas avec la catégorie spécifiée.");
-            }
-
-            db.Entry(categorie).State = EntityState.Modified;
-
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CategorieExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                User user = db.Users.Find(IdUser);
 
-            return StatusCode(HttpStatusCode.NoContent);
+                if (IdUser.Equals(-1))
+                {
+                    return Unauthorized();
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
+                                + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                            );
+                }
+
+                if (user.IsAdmin == false)
+                {
+                    return Unauthorized();
+                }
+
+                if (id != categorie.IdCat)
+                {
+                    return BadRequest("L'identifiant ne correspond pas avec la catégorie spécifiée.");
+                }
+
+                db.Entry(categorie).State = EntityState.Modified;
+
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!CategorieExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return StatusCode(HttpStatusCode.NoContent);
+            }
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         // POST: api/Categories
@@ -121,29 +135,36 @@ namespace serveur.Controllers
         [ResponseType(typeof(Categorie))]
         public IHttpActionResult DeleteCategorie(int id)
         {
-            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-            User user = db.Users.Find(IdUser);
-
-            if (IdUser.Equals(-1))
+            try
             {
-                return Unauthorized();
-            }
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                User user = db.Users.Find(IdUser);
 
-            Categorie categorie = db.Categories.Find(id);
-            if (categorie == null)
+                if (IdUser.Equals(-1))
+                {
+                    return Unauthorized();
+                }
+
+                Categorie categorie = db.Categories.Find(id);
+                if (categorie == null)
+                {
+                    return NotFound();
+                }
+
+                if (user.IsAdmin == false)
+                {
+                    return Unauthorized();
+                }
+
+                db.Categories.Remove(categorie);
+                db.SaveChanges();
+
+                return Ok(categorie);
+            }
+            catch
             {
-                return NotFound();
+                return InternalServerError();
             }
-
-            if (user.IsAdmin == false)
-            {
-                return Unauthorized();
-            }
-
-            db.Categories.Remove(categorie);
-            db.SaveChanges();
-
-            return Ok(categorie);
         }
 
         protected override void Dispose(bool disposing)

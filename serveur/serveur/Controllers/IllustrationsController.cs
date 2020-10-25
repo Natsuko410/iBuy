@@ -32,18 +32,25 @@ namespace serveur.Controllers
         [ResponseType(typeof(Illustration))]
         public HttpResponseMessage GetIllustration(int id)
         {
-            Illustration Illustration = db.Illustrations.Find(id);
-            if (Illustration == null)
+            try
             {
-                return Request.CreateResponse(HttpStatusCode.NotFound);
+                Illustration Illustration = db.Illustrations.Find(id);
+                if (Illustration == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotFound);
+                }
+
+                var response = Request.CreateResponse(HttpStatusCode.OK);
+                var fileStream = new FileStream(HttpContext.Current.Server.MapPath(Illustration.Path), FileMode.Open, FileAccess.Read);
+                response.Content = new StreamContent(fileStream);
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+
+                return response;
             }
-
-            var response = Request.CreateResponse(HttpStatusCode.OK);
-            var fileStream = new FileStream(HttpContext.Current.Server.MapPath(Illustration.Path), FileMode.Open, FileAccess.Read);
-            response.Content = new StreamContent(fileStream);
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
-
-            return response;
+            catch
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError);
+            }
         }
 
         // PUT: api/Illustrations/5

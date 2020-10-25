@@ -28,75 +28,88 @@ namespace serveur.Controllers
         [ResponseType(typeof(Avis))]
         public IHttpActionResult GetAvis(int id)
         {
-            Avis avis = db.Avis.Find(id);
-            if (avis == null)
+            try
             {
-                return NotFound();
-            }
+                Avis avis = db.Avis.Find(id);
+                if (avis == null)
+                {
+                    return NotFound();
+                }
 
-            return Ok(avis);
+                return Ok(avis);
+            }
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         // PUT: api/Avis/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutAvis([FromUri] int id, [FromBody] Avis avis)
         {
-
-            // Checks token validity
-            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-            if (IdUser.Equals(-1))
-            {
-                return Unauthorized();
-            }
-
-            if (IdUser == avis.IdConcerne)
-            {
-                return BadRequest("Un User ne peut pas donner un avis sur lui-même");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
-                            + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
-                        );
-            }
-
-            if (IdUser != avis.IdUser)
-            {
-                return Unauthorized();
-            }
-
-            if (id != avis.IdAvis)
-            {
-                return BadRequest("L'identifiant de l'avis ne correspond pas avec l'identifiant donné.");
-            }
-
-            if (db.Avis.Where(a => a.IdConcerne == avis.IdConcerne).Count(a => a.IdUser == avis.IdUser) > 1)
-            {
-                return BadRequest("Impossible de mettre deux avis sur le même user.");
-            }
-
-            db.Entry(avis).State = EntityState.Modified;
-
             try
             {
-                db.SaveChanges();
+                // Checks token validity
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1))
+                {
+                    return Unauthorized();
+                }
+
+                if (IdUser == avis.IdConcerne)
+                {
+                    return BadRequest("Un User ne peut pas donner un avis sur lui-même");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
+                                + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                            );
+                }
+
+                if (IdUser != avis.IdUser)
+                {
+                    return Unauthorized();
+                }
+
+                if (id != avis.IdAvis)
+                {
+                    return BadRequest("L'identifiant de l'avis ne correspond pas avec l'identifiant donné.");
+                }
+
+                if (db.Avis.Where(a => a.IdConcerne == avis.IdConcerne).Count(a => a.IdUser == avis.IdUser) > 1)
+                {
+                    return BadRequest("Impossible de mettre deux avis sur le même user.");
+                }
+
+                db.Entry(avis).State = EntityState.Modified;
+
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!AvisExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                UpdateUserMoyenneNote(avis.IdConcerne);
+
+                return StatusCode(HttpStatusCode.NoContent);
             }
-            catch (DbUpdateConcurrencyException)
+            catch
             {
-                if (!AvisExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return InternalServerError();
             }
-
-            UpdateUserMoyenneNote(avis.IdConcerne);
-
-            return StatusCode(HttpStatusCode.NoContent);
         }
 
         // POST: api/Avis

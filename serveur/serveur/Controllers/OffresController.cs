@@ -28,13 +28,20 @@ namespace serveur.Controllers {
         [ResponseType(typeof(Offre))]
         public IHttpActionResult GetOffre(int id)
         {
-            Offre offre = db.Offres.Find(id);
-            if (offre == null)
+            try
             {
-                return NotFound();
-            }
+                Offre offre = db.Offres.Find(id);
+                if (offre == null)
+                {
+                    return NotFound();
+                }
 
-            return Ok(offre);
+                return Ok(offre);
+            }
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         // PUT: api/Offres/5
@@ -48,55 +55,69 @@ namespace serveur.Controllers {
         [ResponseType(typeof(Offre))]
         public IHttpActionResult PostOffre([FromBody] Offre offre)
         {
-            // Checks token validity
-            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-            if (IdUser.Equals(-1))
+            try
             {
-                return Unauthorized();
-            }
+                // Checks token validity
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1))
+                {
+                    return Unauthorized();
+                }
 
-            if (!ModelState.IsValid)
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                if (IdUser != offre.IdUser)
+                {
+                    return Unauthorized();
+                }
+
+                if ((DateTime.Compare(DateTime.Now, offre.Enchere.DateDebut) < 0) || (DateTime.Compare(DateTime.Now, offre.Enchere.DateFin) > 0))
+                {
+                    return BadRequest();
+                }
+
+                db.Offres.Add(offre);
+                db.SaveChanges();
+
+                return CreatedAtRoute("DefaultApi", new { id = offre.IdOffr }, offre);
+            }
+            catch
             {
-                return BadRequest(ModelState);
+                return InternalServerError();
             }
-
-            if (IdUser != offre.IdUser)
-            {
-                return Unauthorized();
-            }
-
-            if ((DateTime.Compare(DateTime.Now, offre.Enchere.DateDebut) < 0) || (DateTime.Compare(DateTime.Now, offre.Enchere.DateFin) > 0))
-            {
-                return BadRequest();
-            }
-
-            db.Offres.Add(offre);
-            db.SaveChanges();
-
-            return CreatedAtRoute("DefaultApi", new { id = offre.IdOffr }, offre);
         }
 
         // DELETE: api/Offres/5
         [ResponseType(typeof(Offre))]
         public IHttpActionResult DeleteOffre(int id)
         {
-            Offre offre = db.Offres.Find(id);
-            if (offre == null)
+            try
             {
-                return NotFound();
+                Offre offre = db.Offres.Find(id);
+                if (offre == null)
+                {
+                    return NotFound();
+                }
+
+                // Checks token validity
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1) || IdUser != offre.IdUser)
+                {
+                    return Unauthorized();
+                }
+
+                db.Offres.Remove(offre);
+                db.SaveChanges();
+
+                return Ok(offre);
             }
-            
-            // Checks token validity
-            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-            if (IdUser.Equals(-1) || IdUser != offre.IdUser)
+            catch
             {
-                return Unauthorized();
+                return InternalServerError();
             }
-
-            db.Offres.Remove(offre);
-            db.SaveChanges();
-
-            return Ok(offre);
         }
 
         protected override void Dispose(bool disposing)

@@ -100,9 +100,9 @@ namespace serveur.Controllers
             base.Dispose(disposing);
         }
 
-        /*private bool TokenWalletExists(int id)
+        private bool TokenWalletExists(int id)
         {
             return db.TokenWallets.Count(e => e.IdTokenWallet == id) > 0;
-        }*/
+        }
     }
 }

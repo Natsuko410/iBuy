@@ -133,8 +133,6 @@ namespace serveur.Controllers
         [ResponseType(typeof(User))]
         public IHttpActionResult DeleteUser()
         {
-            
-
             try
             {
                 // Checks token validity

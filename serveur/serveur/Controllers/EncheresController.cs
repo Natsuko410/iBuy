@@ -28,173 +28,200 @@ namespace serveur.Controllers
         [ResponseType(typeof(Enchere))]
         public IHttpActionResult GetEnchere(int id)
         {
-            Enchere enchere = db.Encheres.Find(id);
-            if (enchere == null)
+            try
             {
-                return NotFound();
-            }
+                Enchere enchere = db.Encheres.Find(id);
+                if (enchere == null)
+                {
+                    return NotFound();
+                }
 
-            return Ok(enchere);
+                return Ok(enchere);
+            }
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         // PUT: api/Encheres/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEnchere(int id, Enchere enchere)
         {
-            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-            if (IdUser.Equals(-1))
-            {
-                return Unauthorized();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
-                            + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
-                        );
-            }
-
-            if (IdUser != enchere.Annonce.IdUser)
-            {
-                return BadRequest("L'identifiant ne correspond pas avec l'id de propriétaire de cette annonce.");
-            }
-
-            if (id != enchere.IdEnch)
-            {
-                return BadRequest("L'identifiant ne correspond pas avec l'enchère spécifiée.");
-            }
-
-            if (DateTime.Now > enchere.DateDebut)
-            {
-                return BadRequest("Impossible de modifier une enchère qui a déjà commencé.");
-            }
-
-            if (enchere.DateDebut < DateTime.Now)
-            {
-                return BadRequest("La date de début ne peut pas être inférieure à la date actuelle.");
-            }
-
-            if (enchere.DateFin < DateTime.Now)
-            {
-                return BadRequest("La date de fin ne peut pas être inférieure à la date actuelle.");
-            }
-
-            if (enchere.DateFin <= enchere.DateDebut)
-            {
-                return BadRequest("La date de début ne peut pas être inférieure ou égale à la date de fin.");
-            }
-
-            Enchere EnchereDb = db.Encheres.Find(id);
-            if (EnchereDb == null)
-            {
-                return BadRequest("Cette enchère n'existe pas.");
-            }
-
-            if (DateTime.Now > EnchereDb.DateDebut || DateTime.Now > EnchereDb.DateFin)
-            {
-                return BadRequest("Cette enchère a déjà débuté ou est déjà terminée.");
-            }
-
-            db.Entry(enchere).State = EntityState.Modified;
-
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EnchereExists(id))
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1))
                 {
-                    return NotFound();
+                    return Unauthorized();
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return StatusCode(HttpStatusCode.NoContent);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
+                                + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                            );
+                }
+
+                if (IdUser != enchere.Annonce.IdUser)
+                {
+                    return BadRequest("L'identifiant ne correspond pas avec l'id de propriétaire de cette annonce.");
+                }
+
+                if (id != enchere.IdEnch)
+                {
+                    return BadRequest("L'identifiant ne correspond pas avec l'enchère spécifiée.");
+                }
+
+                if (DateTime.Now > enchere.DateDebut)
+                {
+                    return BadRequest("Impossible de modifier une enchère qui a déjà commencé.");
+                }
+
+                if (enchere.DateDebut < DateTime.Now)
+                {
+                    return BadRequest("La date de début ne peut pas être inférieure à la date actuelle.");
+                }
+
+                if (enchere.DateFin < DateTime.Now)
+                {
+                    return BadRequest("La date de fin ne peut pas être inférieure à la date actuelle.");
+                }
+
+                if (enchere.DateFin <= enchere.DateDebut)
+                {
+                    return BadRequest("La date de début ne peut pas être inférieure ou égale à la date de fin.");
+                }
+
+                Enchere EnchereDb = db.Encheres.Find(id);
+                if (EnchereDb == null)
+                {
+                    return BadRequest("Cette enchère n'existe pas.");
+                }
+
+                if (DateTime.Now > EnchereDb.DateDebut || DateTime.Now > EnchereDb.DateFin)
+                {
+                    return BadRequest("Cette enchère a déjà débuté ou est déjà terminée.");
+                }
+
+                db.Entry(enchere).State = EntityState.Modified;
+
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!EnchereExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return StatusCode(HttpStatusCode.NoContent);
+            }
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         // POST: api/Encheres
         [ResponseType(typeof(Enchere))]
         public IHttpActionResult PostEnchere(Enchere enchere)
         {
-            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-            if (IdUser.Equals(-1))
+            try
             {
-                return Unauthorized();
-            }
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1))
+                {
+                    return Unauthorized();
+                }
 
-            if (!ModelState.IsValid)
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
+                                + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                            );
+                }
+
+                if (IdUser != enchere.Annonce.IdUser)
+                {
+                    return Unauthorized();
+                }
+
+                if (db.Encheres.Count(e => e.IdAnno == enchere.IdAnno) > 0)
+                {
+                    return BadRequest("Impossible d'ajouter plusieurs enchères sur la même annonce.");
+                }
+
+                if (enchere.DateDebut < DateTime.Now)
+                {
+                    return BadRequest("La date de début ne peut pas être inférieure à la date actuelle.");
+                }
+
+                if (enchere.DateFin < DateTime.Now)
+                {
+                    return BadRequest("La date de fin ne peut pas être inférieure à la date actuelle.");
+                }
+
+                if (enchere.DateFin < enchere.DateDebut)
+                {
+                    return BadRequest("La date de début ne peut pas être inférieure à la date de fin.");
+                }
+
+                db.Encheres.Add(enchere);
+                db.SaveChanges();
+
+                return CreatedAtRoute("DefaultApi", new { id = enchere.IdEnch }, enchere);
+            }
+            catch
             {
-                return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
-                            + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
-                        );
+                return InternalServerError();
             }
-
-            if (IdUser != enchere.Annonce.IdUser)
-            {
-                return Unauthorized();
-            }
-
-            if (db.Encheres.Count(e => e.IdAnno == enchere.IdAnno) > 0)
-            {
-                return BadRequest("Impossible d'ajouter plusieurs enchères sur la même annonce.");
-            }
-
-            if (enchere.DateDebut < DateTime.Now)
-            {
-                return BadRequest("La date de début ne peut pas être inférieure à la date actuelle.");
-            }
-
-            if (enchere.DateFin < DateTime.Now)
-            {
-                return BadRequest("La date de fin ne peut pas être inférieure à la date actuelle.");
-            }
-
-            if (enchere.DateFin < enchere.DateDebut)
-            {
-                return BadRequest("La date de début ne peut pas être inférieure à la date de fin.");
-            }
-
-            db.Encheres.Add(enchere);
-            db.SaveChanges();
-
-            return CreatedAtRoute("DefaultApi", new { id = enchere.IdEnch }, enchere);
         }
 
         // DELETE: api/Encheres/5
         [ResponseType(typeof(Enchere))]
         public IHttpActionResult DeleteEnchere(int id)
         {
-
-            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-            if (IdUser.Equals(-1))
+            try
             {
-                return Unauthorized();
-            }
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1))
+                {
+                    return Unauthorized();
+                }
 
-            Enchere enchere = db.Encheres.Find(id);
-            if (enchere == null)
+                Enchere enchere = db.Encheres.Find(id);
+                if (enchere == null)
+                {
+                    return NotFound();
+                }
+
+                if (IdUser != enchere.Annonce.IdUser)
+                {
+                    return Unauthorized();
+                }
+
+                if (DateTime.Now > enchere.DateDebut)
+                {
+                    return BadRequest("Impossible de supprimer une enchère qui a déjà commencé.");
+                }
+
+                db.Encheres.Remove(enchere);
+                db.SaveChanges();
+
+                return Ok(enchere);
+            }
+            catch
             {
-                return NotFound();
+                return InternalServerError();
             }
-
-            if (IdUser != enchere.Annonce.IdUser)
-            {
-                return Unauthorized();
-            }
-
-            if (DateTime.Now > enchere.DateDebut)
-            {
-                return BadRequest("Impossible de supprimer une enchère qui a déjà commencé.");
-            }
-
-            db.Encheres.Remove(enchere);
-            db.SaveChanges();
-
-            return Ok(enchere);
         }
 
         protected override void Dispose(bool disposing)

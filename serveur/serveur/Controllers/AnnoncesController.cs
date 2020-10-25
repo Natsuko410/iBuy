@@ -128,102 +128,123 @@ namespace serveur.Controllers
                 }
             }
 
-            string BaseUrl = HttpContext.Current.Request.Url.AbsoluteUri;
-            List<DataAnnonce> DataAnnonces = new List<DataAnnonce>();
-            
-            foreach(Annonce annonce in Annonces)
+            try
             {
-                List<string> IllustrationsUrl = new List<string>();
-                IQueryable<Illustration> Illustrations = db.Illustrations.Where(i => i.IdAnno == annonce.IdAnno);
+                string BaseUrl = HttpContext.Current.Request.Url.AbsoluteUri;
+                List<DataAnnonce> DataAnnonces = new List<DataAnnonce>();
 
-                foreach (Illustration illustration in Illustrations)
+                foreach (Annonce annonce in Annonces)
                 {
-                    IllustrationsUrl.Add($"{BaseUrl}/api/Illustrations?idIllu={illustration.IdIllu}");
+                    List<string> IllustrationsUrl = new List<string>();
+                    IQueryable<Illustration> Illustrations = db.Illustrations.Where(i => i.IdAnno == annonce.IdAnno);
+
+                    foreach (Illustration illustration in Illustrations)
+                    {
+                        IllustrationsUrl.Add($"{BaseUrl}/api/Illustrations?idIllu={illustration.IdIllu}");
+                    }
+
+                    DataAnnonces.Add(new DataAnnonce
+                    {
+                        Annonce = annonce,
+                        UrlIllustrations = IllustrationsUrl.ToArray()
+                    });
+
                 }
 
-                DataAnnonces.Add(new DataAnnonce
-                {
-                    Annonce = annonce,
-                    UrlIllustrations = IllustrationsUrl.ToArray()
-                });
-
+                return Ok(DataAnnonces);
             }
-
-            return Ok(DataAnnonces);
+            catch
+            {
+                return InternalServerError();
+            }
         }
 
         // GET: api/Annonces/5
         [ResponseType(typeof(DataAnnonce))]
         public IHttpActionResult GetAnnonce(int id)
         {
-            Annonce Annonce = db.Annonces.Find(id);
-            if (Annonce == null)
+            try
             {
-                return NotFound();
+                Annonce Annonce = db.Annonces.Find(id);
+                if (Annonce == null)
+                {
+                    return NotFound();
+                }
+
+                string BaseUrl = HttpContext.Current.Request.Url.AbsoluteUri;
+                List<string> IllustrationsUrl = new List<string>();
+                IQueryable<Illustration> Illustrations = db.Illustrations.Where(i => i.IdAnno == id);
+
+                foreach (Illustration illustration in Illustrations)
+                {
+                    IllustrationsUrl.Add($"{BaseUrl}/api/Illustrations?idIllu={illustration.IdIllu}");
+                }
+
+                return Ok(new DataAnnonce
+                {
+                    Annonce = Annonce,
+                    UrlIllustrations = IllustrationsUrl.ToArray()
+                });
             }
-
-            string BaseUrl = HttpContext.Current.Request.Url.AbsoluteUri;
-            List<string> IllustrationsUrl = new List<string>();
-            IQueryable<Illustration> Illustrations = db.Illustrations.Where(i => i.IdAnno == id);
-
-            foreach (Illustration illustration in Illustrations)
+            catch
             {
-                IllustrationsUrl.Add($"{BaseUrl}/api/Illustrations?idIllu={illustration.IdIllu}");
+                return InternalServerError();
             }
-
-            return Ok(new DataAnnonce 
-            {
-                Annonce = Annonce,
-                UrlIllustrations = IllustrationsUrl.ToArray()
-            });
         }
 
         // PUT: api/Annonces/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutAnnonce([FromUri] int id, [FromBody] Annonce annonce)
         {
-            // Checks token validity
-            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
-            if (IdUser.Equals(-1))
-            {
-                return Unauthorized();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
-                            + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
-                        );
-            }
-
-            if (IdUser != annonce.IdUser)
-            {
-                return Unauthorized();
-            }
-
-            if (id != annonce.IdAnno)
-            {
-                return BadRequest("L'identifiant de l'annonce ne correspond pas avec l'identifiant donné.");
-            }
-
-            db.Entry(annonce).State = EntityState.Modified;
-
             try
             {
-                db.SaveChanges();
+                // Checks token validity
+                int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+                if (IdUser.Equals(-1))
+                {
+                    return Unauthorized();
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
+                                + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                            );
+                }
+
+                if (IdUser != annonce.IdUser)
+                {
+                    return Unauthorized();
+                }
+
+                if (id != annonce.IdAnno)
+                {
+                    return BadRequest("L'identifiant de l'annonce ne correspond pas avec l'identifiant donné.");
+                }
+
+                db.Entry(annonce).State = EntityState.Modified;
+
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!AnnonceExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return StatusCode(HttpStatusCode.NoContent);
             }
-            catch (DbUpdateConcurrencyException)
+            catch
             {
-                if (!AnnonceExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return InternalServerError();
             }
-            return StatusCode(HttpStatusCode.NoContent);
         }
 
         // POST: api/Annonces
