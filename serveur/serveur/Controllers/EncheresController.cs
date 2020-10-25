@@ -64,6 +64,11 @@ namespace serveur.Controllers
                 return BadRequest("L'identifiant ne correspond pas avec l'enchère spécifiée.");
             }
 
+            if (DateTime.Now > enchere.DateDebut)
+            {
+                return BadRequest("Impossible de modifier une enchère qui a déjà commencé.");
+            }
+
             if (enchere.DateDebut < DateTime.Now)
             {
                 return BadRequest("La date de début ne peut pas être inférieure à la date actuelle.");
@@ -133,6 +138,11 @@ namespace serveur.Controllers
                 return Unauthorized();
             }
 
+            if (db.Encheres.Count(e => e.IdAnno == enchere.IdAnno) > 0)
+            {
+                return BadRequest("Impossible d'ajouter plusieurs enchères sur la même annonce.");
+            }
+
             if (enchere.DateDebut < DateTime.Now)
             {
                 return BadRequest("La date de début ne peut pas être inférieure à la date actuelle.");
@@ -174,6 +184,11 @@ namespace serveur.Controllers
             if (IdUser != enchere.Annonce.IdUser)
             {
                 return Unauthorized();
+            }
+
+            if (DateTime.Now > enchere.DateDebut)
+            {
+                return BadRequest("Impossible de supprimer une enchère qui a déjà commencé.");
             }
 
             db.Encheres.Remove(enchere);

@@ -41,14 +41,29 @@ namespace serveur.Controllers
         [ResponseType(typeof(void))]
         public IHttpActionResult PutCategorie(int id, Categorie categorie)
         {
+            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+            User user = db.Users.Find(IdUser);
+
+            if (IdUser.Equals(-1))
+            {
+                return Unauthorized();
+            }
+
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
+                            + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                        );
+            }
+
+            if (user.IsAdmin == false)
+            {
+                return Unauthorized();
             }
 
             if (id != categorie.IdCat)
             {
-                return BadRequest();
+                return BadRequest("L'identifiant ne correspond pas avec la catégorie spécifiée.");
             }
 
             db.Entry(categorie).State = EntityState.Modified;
@@ -79,14 +94,21 @@ namespace serveur.Controllers
             int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
             User user = db.Users.Find(IdUser);
 
-            if (IdUser.Equals(-1) || user.IsAdmin == false)
+            if (IdUser.Equals(-1))
             {
                 return Unauthorized();
             }
 
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest($"{String.Join(" ", ModelState.Keys.First().Split('.')).ToLower()} est vide ou mal défini."
+                            + $" {ModelState.Values.Select(x => x.Errors).First().First().ErrorMessage}"
+                        );
+            }
+
+            if (user.IsAdmin == false)
+            {
+                return Unauthorized();
             }
 
             db.Categories.Add(categorie);
@@ -99,10 +121,23 @@ namespace serveur.Controllers
         [ResponseType(typeof(Categorie))]
         public IHttpActionResult DeleteCategorie(int id)
         {
+            int IdUser = TokenService.GetIdUserByToken(db.TokenWallets);
+            User user = db.Users.Find(IdUser);
+
+            if (IdUser.Equals(-1))
+            {
+                return Unauthorized();
+            }
+
             Categorie categorie = db.Categories.Find(id);
             if (categorie == null)
             {
                 return NotFound();
+            }
+
+            if (user.IsAdmin == false)
+            {
+                return Unauthorized();
             }
 
             db.Categories.Remove(categorie);
