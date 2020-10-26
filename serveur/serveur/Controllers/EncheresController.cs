@@ -151,6 +151,11 @@ namespace serveur.Controllers
                 }
 
                 Annonce Annonce = db.Annonces.Find(enchere.IdAnno);
+                if (Annonce == null)
+                {
+                    return NotFound();
+                }
+
                 if (IdUser != Annonce.IdUser)
                 {
                     return Unauthorized();
