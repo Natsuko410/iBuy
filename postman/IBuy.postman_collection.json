@@ -1,0 +1,1451 @@
+{
+	"info": {
+		"_postman_id": "7ea66260-a82a-4718-9a18-ffd13eb6f741",
+		"name": "IBuy",
+		"description": "## Description\nL’application « IBuy » est une application EBay like faite dans le cadre de notre cours de technologie internet.\n\n## Fonctionnalités\n- Authentification\n- Mise en vente ou aux enchères d'articles\n- Navigation à travers les différents articles (accueil, recherche, consultation, etc...)\n- Gestion des profils utilisateurs\n- Gestion de mise en favoris d'annonces\n- Système de confiance (un utilisateur peut donner son avis sur un vendeur permettant un meilleur référencement de celui-ci)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Ajouter un User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d67c619f-8303-4c33-b295-11bf831d6363",
+								"exec": [
+									"const localhost = pm.variables.get('localhost');\r",
+									"\r",
+									"pm.test(\"Requête correcte\", function () {\r",
+									"    pm.response.to.not.be.ok;\r",
+									"    pm.response.to.have.property('code', 201);\r",
+									"    pm.response.to.have.property('status', 'Created');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Requête body vide\", function () {\r",
+									"   pm.sendRequest({\r",
+									"        url: `${localhost}/api/Users`,\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'content-type': 'application/json',\r",
+									"            'x-site-code': pm.environment.get(\"x-site-code\")\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify({})\r",
+									"        }\r",
+									"   }, function (err, res) {\r",
+									"        pm.expect(err).to.not.be.ok;\r",
+									"        pm.expect(res).to.have.property('code', 400);\r",
+									"        pm.expect(res).to.have.property('status', 'Bad Request');\r",
+									"        const responseJson = res.json();\r",
+									"        pm.expect(responseJson.Message).to.be.a('string');\r",
+									"        pm.expect(responseJson.Message)\r",
+									"            .equals(\"user nom est vide ou mal défini. Le champs nom est obligatoire.\");\r",
+									"   }); \r",
+									"\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Requête pseudo existant\", function () {\r",
+									"   pm.sendRequest({\r",
+									"        url: `${localhost}/api/Users`,\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'content-type': 'application/json',\r",
+									"            'x-site-code': pm.environment.get(\"x-site-code\")\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify({\r",
+									"                \"idUser\": 0,\r",
+									"                \"Nom\": \"Bureau\",\r",
+									"                \"Prenom\": \"Pauline\",\r",
+									"                \"Email\": \"PaulineBureau@rhyta.com\",\r",
+									"                \"Mdp\": \"eiW2ZiePh\",\r",
+									"                \"Tel\": \"0494188815\",\r",
+									"                \"Pseudo\": \"Manne777\",\r",
+									"                \"AddrPays\": \"Belgique\",\r",
+									"                \"AddrLocalite\": \"Liberchies\",\r",
+									"                \"AddrCodePostal\": \"6238\",\r",
+									"                \"AddrRue\": \"Kapelaniestraat \",\r",
+									"                \"AddrNumero\": \"138\"\r",
+									"            })\r",
+									"        }\r",
+									"   }, function (err, res) {\r",
+									"        pm.expect(err).to.not.be.ok;\r",
+									"        pm.expect(res).to.have.property('code', 400);\r",
+									"        pm.expect(res).to.have.property('status', 'Bad Request');\r",
+									"        const responseJson = res.json();\r",
+									"        pm.expect(responseJson.Message).to.be.a('string');\r",
+									"   }); \r",
+									"\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Requête pseudo trop court\", function () {\r",
+									"   pm.sendRequest({\r",
+									"        url:`${localhost}/api/Users`,\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'content-type': 'application/json',\r",
+									"            'x-site-code': pm.environment.get(\"x-site-code\")\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify({\r",
+									"                \"idUser\": 0,\r",
+									"                \"Nom\": \"Bureau\",\r",
+									"                \"Prenom\": \"Pauline\",\r",
+									"                \"Email\": \"PaulineBureau@rhyta.com\",\r",
+									"                \"Mdp\": \"eiW2ZiePh\",\r",
+									"                \"Tel\": \"0494188815\",\r",
+									"                \"Pseudo\": \"Mann\",\r",
+									"                \"AddrPays\": \"Belgique\",\r",
+									"                \"AddrLocalite\": \"Liberchies\",\r",
+									"                \"AddrCodePostal\": \"6238\",\r",
+									"                \"AddrRue\": \"Kapelaniestraat \",\r",
+									"                \"AddrNumero\": \"138\"\r",
+									"            })\r",
+									"        }\r",
+									"   }, function (err, res) {\r",
+									"        pm.expect(err).to.not.be.ok;\r",
+									"        pm.expect(res).to.have.property('code', 400);\r",
+									"        pm.expect(res).to.have.property('status', 'Bad Request');\r",
+									"        const responseJson = res.json();\r",
+									"        pm.expect(responseJson.Message).to.be.a('string');\r",
+									"   }); \r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4dee7397-022f-4f75-95c2-ce1d9d84b9c6",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"idUser\": 0,\r\n    \"Nom\": \"Bureau\",\r\n    \"Prenom\": \"Pauline\",\r\n    \"Email\": \"PaulineBureau@rhyta.com\",\r\n    \"Mdp\": \"eiW2ZiePh\",\r\n    \"Tel\": \"0494188815\",\r\n    \"Pseudo\": \"Manne777\",\r\n    \"AddrPays\": \"Belgique\",\r\n    \"AddrLocalite\": \"Liberchies\",\r\n    \"AddrCodePostal\": \"6238\",\r\n    \"AddrRue\": \"Kapelaniestraat \",\r\n    \"AddrNumero\": \"138\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Users",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Users"
+							]
+						},
+						"description": "## Description\nAjoute un utilisateur normal au système. Impossible d'ajouter un administrateur avec une requête.\n\n## Prérequis\nAucun prérequis nécessaire.\n\n## Retour\nLa requête retourne les informations de l'utilisateur créé s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir tous les Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/Users",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Users"
+							]
+						},
+						"description": "## Description\nRécupère tous les utilisateurs du système.\n\n## Prérequis\nAucun prérequis nécessaire.\n\n## Retour\nLa requête retourne les informations de tous les utilisateurs s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres\nNécessite aucun paramètre."
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir un User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2246b460-901b-4c2b-afe4-50b2ac332395",
+								"exec": [
+									"const localhost = pm.variables.get('localhost');\r",
+									"\r",
+									"pm.test(\"Requête tous les Users correcte\", function () {\r",
+									"    pm.response.to.have.property('code', 200);\r",
+									"    pm.response.to.be.ok;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Requête un User correcte\", function () {\r",
+									"    pm.sendRequest({\r",
+									"        url: `${localhost}/api/Users`,\r",
+									"        header: {\r",
+									"            'content-type': 'application/json',\r",
+									"            'x-site-code': pm.environment.get(\"x-site-code\")\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        pm.expect(res).to.have.property('code', 200);\r",
+									"        pm.expect(res).to.be.ok;\r",
+									"\r",
+									"        var dataUsers = res.json();\r",
+									"\r",
+									"        pm.sendRequest({\r",
+									"            url: `${localhost}/api/Users?id=${dataUsers[0].IdUser}`,\r",
+									"            header: {\r",
+									"                'content-type': 'application/json',\r",
+									"                'x-site-code': pm.environment.get(\"x-site-code\")\r",
+									"            }\r",
+									"        }, function (err, res) {\r",
+									"                pm.expect(err).to.not.be.ok;\r",
+									"                pm.expect(res).to.have.property('code', 200);\r",
+									"                pm.expect(res).to.have.property('status', 'OK');\r",
+									"                const responseJson = res.json();\r",
+									"                pm.expect(responseJson).to.be.a(\"object\");\r",
+									"                pm.expect(responseJson.IdUser).equals(dataUsers[0].IdUser);\r",
+									"        }); \r",
+									"    }); \r",
+									"});\r",
+									"\r",
+									"pm.test(\"Requête un User incorrecte\", function () {\r",
+									"    pm.sendRequest({\r",
+									"        url: `${localhost}/api/Users?id=-1`,\r",
+									"        header: {\r",
+									"            'content-type': 'application/json',\r",
+									"            'x-site-code': pm.environment.get(\"x-site-code\")\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        pm.expect(err).to.not.be.ok;\r",
+									"        pm.expect(res).to.have.property('code', 404);\r",
+									"    }); \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/Users?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Users"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nRécupère les informations de l'utilisateur qui a l'id correspondant à celui passé en paramètre.\n\n## Prérequis\nAucun prérequis nécessaire.\n\n## Retour\nLa requête retourne les informations de l'utilisateur s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Modifier un User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"idUser\": 1,\r\n    \"Nom\": \"Bureau\",\r\n    \"Prenom\": \"Pauline\",\r\n    \"Email\": \"PaulineBureau@rhyta.com\",\r\n    \"Mdp\": \"eiW2ZiePh\",\r\n    \"Tel\": \"0494188815\",\r\n    \"Pseudo\": \"Manne999\",\r\n    \"AddrPays\": \"Belgique\",\r\n    \"AddrLocalite\": \"Liberchies\",\r\n    \"AddrCodePostal\": \"6238\",\r\n    \"AddrRue\": \"Kapelaniestraat \",\r\n    \"AddrNumero\": \"138\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Users/",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Users",
+								""
+							]
+						},
+						"description": "## Description\nModifie les informations de l'utilisateur auquel le token passé dans le header appartient.\n\n## Prérequis\nL'utilisateur doit être connecté.\n\n## Retour\nLa requête retourne le code http 204 no content s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer un User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/Users?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Users"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nSupprime l'utilisateur dont l'id passé en paramètre et l'id de l'utilisateur du token correspondent.\n\n## Prérequis\nL'utilisateur doit être connecté.\n\n## Retour\nLa requête retourne les informations de l'utilisateur supprimé s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "TokenWallets",
+			"item": [
+				{
+					"name": "Nouveau Token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/TokenWallets?pseudo=Manne777&mdp=eiW2ZiePh",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"TokenWallets"
+							],
+							"query": [
+								{
+									"key": "pseudo",
+									"value": "Manne777"
+								},
+								{
+									"key": "mdp",
+									"value": "eiW2ZiePh"
+								}
+							]
+						},
+						"description": "## Description\nGénère un token pour l'utilisateur dont le pseudo passé en paramètre correspond seulement si les identifiants sont corrects. Si l'utilisateur a déjà un token, un nouveau token sera généré et remplacera l'ancien.\n\n## Prérequis\nL'utilisateur doit être enregistré dans le système.\n\n## Retour\nLa requête retourne le token créé s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Catégories",
+			"item": [
+				{
+					"name": "Ajouter une Catégorie",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"IdCat\": 1,\r\n    \"Nom\": \"Informatique\",\r\n    \"Desc\": \"Ordinateurs, consoles, jeux et Composants...\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Categories",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Categories"
+							]
+						},
+						"description": "## Description\nAjoute une catégorie dans le système.\n\n## Prérequis\nL'utilisateur doit être connecté et être un administrateur.\n\n## Retour\nLa requête retourne les informations de la catégorie créée s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir toutes les Catégories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/Categories",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Categories"
+							]
+						},
+						"description": "## Description\nRécupère toutes les catégories du système.\n\n## Prérequis\nAucun prérequis nécessaire.\n\n## Retour\nLa requête retourne toutes les catégories du système s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres\nNécessite aucun paramètre."
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir une Catégorie",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/Categories?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Categories"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nRécupère la catégorie avec l'id correspondant à celui passé en paramètre.\n\n## Prérequis\nAucun prérequis nécessaire.\n\n## Retour\nLa requête retourne les informations de la catégorie s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Modifier une Catégorie",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"IdCat\": 1,\r\n    \"Nom\": \"Informatique et jeux vidéos\",\r\n    \"Desc\": \"Ordinateurs, consoles, jeux et Composants...\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Categories/1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Categories",
+								"1"
+							]
+						},
+						"description": "## Description\nModifie la catégorie avec l'id correspondant à celui passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté et être un administrateur.\n\n## Retour\nLa requête retourne le code http 204 no content s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer une Catégorie",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/Categories?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Categories"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nSupprime la catégorie avec l'id correspondant à celui passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté et être un administrateur.\n\n## Retour\nLa requête retourne les informations de la catégorie supprimée s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Annonces",
+			"item": [
+				{
+					"name": "Ajouter une Annonce",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Titre\": \"vente test\",\r\n    \"MontantMin\": 10,\r\n    \"DateAjout\": \"2020-10-24T18:46:24.267\",\r\n    \"EtatAnno\": \"vente\",\r\n    \"IsEnchere\": true,\r\n    \"NomProd\": \"produit nom\",\r\n    \"DescriptionProd\": \"ceci est mon prod\",\r\n    \"EtatProd\": \"neuf\",\r\n    \"IdCat\": 1,\r\n    \"IdUser\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Annonces",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Annonces"
+							]
+						},
+						"description": "## Description\nAjoute une annonce dans le système.\n\n## Prérequis\nL'utilisateur doit être connecté.\n\n## Retour\nLa requête retourne les informations de l'annonce créée s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Lister les Annonces",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/Annonces",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Annonces"
+							],
+							"query": [
+								{
+									"key": "idCat",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "typeDeVente",
+									"value": "autre",
+									"disabled": true
+								},
+								{
+									"key": "idUser",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "etat",
+									"value": "vente",
+									"disabled": true
+								},
+								{
+									"key": "nomRecherche",
+									"value": "lenovo",
+									"disabled": true
+								}
+							]
+						},
+						"description": "## Description\nRécupère les annonces dans le système qui remplissent les conditions des paramètres passés.\n\n## Prérequis\nAucun prérequis nécessaire.\n\n## Retour\nLa requête retourne les Annonces avec les URL de leurs illustrations s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir une annonce",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/Annonces?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Annonces"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nRécupère l'annonce qui correspond à l'id passé en paramètre.\n\n## Prérequis\nAucun prérequis nécessaire.\n\n## Retour\nLa requête retourne l'Annonce et l'URL des illustrations liées à celle-ci s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Modifier une annonce",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"IdAnno\": 1,\r\n    \"Titre\": \"vente modifiée\",\r\n    \"MontantMin\": 10,\r\n    \"DateAjout\": \"2020-10-24T18:46:24.267\",\r\n    \"EtatAnno\": \"vente\",\r\n    \"IsEnchere\": true,\r\n    \"NomProd\": \"produit nom\",\r\n    \"DescriptionProd\": \"ceci est mon produit\",\r\n    \"EtatProd\": \"neuf\",\r\n    \"IdCat\": 1,\r\n    \"IdUser\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Annonces?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Annonces"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nModifie l'annonce correspondant à l'id passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté et propriétaire de l'annonce.\n\n## Retour\nLa requête retourne le code http 204 no content s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer une annonce",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/Annonces?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Annonces"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nSupprime l'annonce correspondant à l'id passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté et propriétaire de l'annonce.\n\n## Retour\nLa requête retourne les informations de l'annonce supprimée s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Enchères",
+			"item": [
+				{
+					"name": "Ajouter une Enchère",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"dateDebut\": \"2020-12-25 13:04:30.063\",\r\n    \"dateFin\": \"2020-12-30 13:04:30.063\",\r\n    \"IdAnno\" : 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Encheres",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Encheres"
+							]
+						},
+						"description": "## Description\nAjoute une enchère sur l'annonce qui a l'id correspondant à celui passé en paramètre dans le système.\n\n## Prérequis\nL'utilisateur doit être connecté et doit être propriétaire de l'annonce spécifiée.\n\n## Retour\nLa requête retourne les informations de l'enchère créée et de l'annonce liée s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir toutes les Enchères",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/Encheres",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Encheres"
+							]
+						},
+						"description": "## Description\nRécupère toutes les enchères du système.\n\n## Prérequis\nAucun prérequis nécessaire.\n\n## Retour\nLa requête retourne toutes les enchères du système s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir une Enchère",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/Encheres?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Encheres"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nRécupère l'enchère qui correspond à l'id passé en paramètre.\n\n## Prérequis\nAucun prérequis nécessaire.\n\n## Retour\nLa requête retourne les informations de l'enchère s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Modifier une Enchère",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"IdEnch\": 1,\r\n    \"DateDebut\": \"2020-11-26T13:04:30.063\",\r\n    \"DateFin\": \"2020-12-30T13:04:30.063\",\r\n    \"IdAnno\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Encheres?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Encheres"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nModifie l'enchère qui correspond à l'id passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté et doit être propriétaire de l'annonce sur laquelle porte l'enchère.\n\n## Retour\nLa requête retourne le code http 204 no content s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer une Enchère",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/Encheres?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Encheres"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nSupprime l'enchère qui correspond à l'id passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté et doit être propriétaire de l'annonce sur laquelle porte l'enchère.\n\n## Retour\nLa requête retourne les informations de l'enchère supprimée et de l'annonce liée s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Illustrations",
+			"item": [
+				{
+					"name": "Ajouter une ou plusieurs Illustrations",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image1.jpg",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "image2.jpg",
+									"type": "file",
+									"src": []
+								}
+							],
+							"options": {
+								"formdata": {}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Illustrations?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Illustrations"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nAjoute une ou plusieurs illustrations liées à l'annonce qui correspond à l'id passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté et doit être propriétaire de l'annonce liée.\n\n## Retour\nLa requête retourne les informations sur la/les illustration(s) ajoutée(s) s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir une Illustration",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/Illustrations?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Illustrations"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nRécupère l'illustration qui correspond à l'id passé en paramètre.\n\n## Prérequis\nAucun prérequis nécessaire.\n\n## Retour\nLa requête retourne les informations de l'illustration s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer une Illustration",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/Illustrations?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Illustrations"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nSupprime l'illustration qui correspond à l'id passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté et doit être propriétaire de l'annonce liée.\n\n## Retour\nLa requête retourne les informations sur l'illustration supprimée s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Offres",
+			"item": [
+				{
+					"name": "Ajouter une Offre",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Montant\" : 16,\r\n    \"IdUser\" : 1,\r\n    \"IdEnch\" : 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Offres",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Offres"
+							]
+						},
+						"description": "## Description\nAjoute une offre sur l'enchère qui correspond à l'id passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté.\n\n## Retour\nLa requête retourne les informations sur l'offre ajoutée s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir toutes les Offres",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Offres?idEnch=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Offres"
+							],
+							"query": [
+								{
+									"key": "idEnch",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nRécupère toutes les offres de l'enchère qui correspond à l'id passé en paramètre.\n\n## Prérequis\nAucun prérequis nécessaire.\n\n## Retour\nLa requête retourne toutes les offres sur l'enchère spécifiée s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir une Offre",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/Offres/1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Offres",
+								"1"
+							]
+						},
+						"description": "## Description\nRécupère l'offre qui correspond à l'id passé en paramètre.\n\n## Prérequis\nAucun prérequis nécessaire.\n\n## Retour\nLa requête retourne les informations sur l'offre s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer une Offre",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/Offres/2",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Offres",
+								"2"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						},
+						"description": "## Description\nSupprime l'offres qui correspond à l'id passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté et propriétaire de l'offre.\n\n## Retour\nLa requête retourne les informations de l'offre s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Favoris",
+			"item": [
+				{
+					"name": "Ajouter un Favoris",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"IdFavo\": 0,\r\n    \"IdAnno\": 1,\r\n    \"IdUser\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Favoris",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Favoris"
+							]
+						},
+						"description": "## Description\nAjoute le favoris lié à l'annonce qui correspond à l'id passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté.\n\n## Retour\nLa requête retourne les informations sur le favoris ajouté s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir tous les Favoris d'un User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/Favoris",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Favoris"
+							]
+						},
+						"description": "## Description\nRécupère tous les favoris de l'utilisateur qui correspond au token passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté.\n\n## Retour\nLa requête retourne tous les favoris de l'utilisateur spécifié s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir un Favoris",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/Favoris?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Favoris"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nRécupère le favoris qui correspond à l'id passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté et propriétaire du favoris.\n\n## Retour\nLa requête retourne les informations du favoris s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer un Favoris",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/Favoris?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Favoris"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nSupprime le favoris qui correspond à l'id passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté et propriétaire du favoris.\n\n## Retour\nLa requête retourne les informations du favoris s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Avis",
+			"item": [
+				{
+					"name": "Ajouter un Avis",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Id\": 0,\r\n    \"IdConcerne\": 1,\r\n    \"Texte\": \"je suis l'avis sur le user 1 et je dois faire au moins 32 caractères.\",\r\n    \"note\": 5,\r\n    \"datePoste\": \"2020-10-20 13:04:30.063\",\r\n    \"idUser\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Avis",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Avis"
+							]
+						},
+						"description": "## Description\nAjoute l'avis dans le système.\n\n## Prérequis\nL'utilisateur doit être connecté.\n\n## Retour\nLa requête retourne les informations de l'avis ajouté s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir tous les Avis",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/Avis",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Avis"
+							]
+						},
+						"description": "## Description\nRécupère tous les avis du système.\n\n## Prérequis\nAucun prérequis nécessaire.\n\n## Retour\nLa requête retourne tous les avis du système s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir tous les Avis sur un User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/Avis?idUser=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Avis"
+							],
+							"query": [
+								{
+									"key": "idUser",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nRécupère tous les avis du système concernant l'utilisateur qui correspond à l'id passé en paramètre.\n\n## Prérequis\nAucun prérequis nécessaire.\n\n## Retour\nLa requête retourne tous les avis du système concernant l'utilisateur spécifié s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir un Avis",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/api/Avis?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Avis"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nRécupère l'avis correspondant à l'id passé en paramètre.\n\n## Prérequis\nAucun prérequis nécessaire.\n\n## Retour\nLa requête retourne les informations de l'avis s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Modifier un Avis",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"IdAvis\": 1,\r\n    \"Texte\": \"je suis l'avis sur le user 1 et je dois faire au moins 32 caractères.\",\r\n    \"Note\": 8,\r\n    \"DatePoste\": \"2020-10-20T13:04:30.063\",\r\n    \"IdConcerne\": 1,\r\n    \"IdUser\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/api/Avis?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Avis"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nModifie l'avis correspondant à l'id passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté et propriétaire de l'avis.\n\n## Retour\nLa requête retourne le code http 204 no content s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer un Avis",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{localhost}}/api/Avis?id=1",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"api",
+								"Avis"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "## Description\nSupprime l'avis correspondant à l'id passé en paramètre.\n\n## Prérequis\nL'utilisateur doit être connecté et propriétaire de l'avis.\n\n## Retour\nLa requête retourne les informations de l'avis supprimé s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "0407f8c6-9d18-4b2a-bbdb-809dc5929e2b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "755576ec-c5b2-4e95-bad2-7ec54230981c",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "4f86503f-5684-400f-a1cf-fe56dbee99ac",
+			"key": "localhost",
+			"value": "http://localhost:58980"
+		},
+		{
+			"id": "fbb6fb78-f5bf-4509-8504-3c3b7f54ccf6",
+			"key": "token",
+			"value": "VfRUbBE7F0yE0h8BBD+naQ=="
+		}
+	],
+	"protocolProfileBehavior": {}
+}
