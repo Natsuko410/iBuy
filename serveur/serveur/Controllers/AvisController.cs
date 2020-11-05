@@ -24,6 +24,24 @@ namespace serveur.Controllers
             return db.Avis;
         }
 
+        // GET: api/Avis
+        public IHttpActionResult GetAvisOnUser([FromUri] int idUser)
+        {
+            try
+            {
+                if (db.Users.Count(e => e.IdUser == idUser) < 0)
+                {
+                    return NotFound();
+                }
+
+                return Ok(db.Avis.Where(a => a.IdConcerne.Equals(idUser)));
+            }
+            catch
+            {
+                return InternalServerError();
+            }
+        }
+
         // GET: api/Avis/5
         [ResponseType(typeof(Avis))]
         public IHttpActionResult GetAvis(int id)
