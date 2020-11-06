@@ -23,9 +23,9 @@ namespace serveur.Controllers
         private IBuyContext db = new IBuyContext();
 
         // GET: api/Illustrations
-        public IQueryable<Illustration> GetIllustrations()
+        public IHttpActionResult GetIllustrations()
         {
-            return db.Illustrations;
+            return Unauthorized();
         }
 
         // GET: api/Illustrations/5
