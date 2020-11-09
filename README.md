@@ -13,7 +13,7 @@ L’application « IBuy » est une application EBay like faite dans le cadre de 
 
 # Documentation
 
-[Postman](https://projectibuy.postman.co/collections/11077617-7ea66260-a82a-4718-9a18-ffd13eb6f741?version=latest&workspace=e08c5939-eda7-445c-880f-04df41b3af96#4ee149cc-a764-466c-a63f-547b422679cb)
+- [Postman](https://projectibuy.postman.co/collections/11077617-7ea66260-a82a-4718-9a18-ffd13eb6f741?version=latest&workspace=e08c5939-eda7-445c-880f-04df41b3af96#4ee149cc-a764-466c-a63f-547b422679cb)
 
 # Auteurs
 

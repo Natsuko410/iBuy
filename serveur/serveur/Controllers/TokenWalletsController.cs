@@ -20,10 +20,11 @@ namespace serveur.Controllers
         private IBuyContext db = new IBuyContext();
 
         // GET: api/TokenWallets
-        public IHttpActionResult GetTokens([FromUri] string pseudo, [FromUri] string mdp)
+        public IHttpActionResult GetTokens([FromUri] string pseudo="", [FromUri] string mdp="")
         {
             try
             {
+                
                 if (pseudo.IsNullOrWhiteSpace() || mdp.IsNullOrWhiteSpace())
                 {
                     return BadRequest("L'identifiant de connexion ou le mot de passe n'a pas été fourni !");

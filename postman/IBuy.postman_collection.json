@@ -276,7 +276,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"idUser\": 1,\r\n    \"Nom\": \"Bureau\",\r\n    \"Prenom\": \"Pauline\",\r\n    \"Email\": \"PaulineBureau@rhyta.com\",\r\n    \"Mdp\": \"eiW2ZiePh\",\r\n    \"Tel\": \"0494188815\",\r\n    \"Pseudo\": \"Manne999\",\r\n    \"AddrPays\": \"Belgique\",\r\n    \"AddrLocalite\": \"Liberchies\",\r\n    \"AddrCodePostal\": \"6238\",\r\n    \"AddrRue\": \"Kapelaniestraat \",\r\n    \"AddrNumero\": \"138\"\r\n}",
+							"raw": "{\r\n    \"idUser\": 1,\r\n    \"Nom\": \"Bureau\",\r\n    \"Prenom\": \"Pauline\",\r\n    \"Email\": \"PaulineBureau@rhyta.com\",\r\n    \"Mdp\": \"nouveaumdp\",\r\n    \"Tel\": \"0494188815\",\r\n    \"Pseudo\": \"Manne999\",\r\n    \"AddrPays\": \"Belgique\",\r\n    \"AddrLocalite\": \"Liberchies\",\r\n    \"AddrCodePostal\": \"6238\",\r\n    \"AddrRue\": \"Kapelaniestraat \",\r\n    \"AddrNumero\": \"138\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -310,19 +310,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{localhost}}/api/Users?id=1",
+							"raw": "{{localhost}}/api/Users",
 							"host": [
 								"{{localhost}}"
 							],
 							"path": [
 								"api",
 								"Users"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "1"
-								}
 							]
 						},
 						"description": "## Description\nSupprime l'utilisateur dont l'id passé en paramètre et l'id de l'utilisateur du token correspondent.\n\n## Prérequis\nL'utilisateur doit être connecté.\n\n## Retour\nLa requête retourne les informations de l'utilisateur supprimé s'il n'y a pas d'erreur, sinon elle renvoie un message d'erreur avec le code http correspondant.\n\n## Paramètres"
@@ -1437,14 +1431,14 @@
 	],
 	"variable": [
 		{
-			"id": "4f86503f-5684-400f-a1cf-fe56dbee99ac",
+			"id": "624a7534-50d6-4009-ab53-dafd0063d44f",
 			"key": "localhost",
 			"value": "http://localhost:58980"
 		},
 		{
-			"id": "fbb6fb78-f5bf-4509-8504-3c3b7f54ccf6",
+			"id": "65be2502-afea-4bbd-a989-3bf1771d1fc5",
 			"key": "token",
-			"value": "VfRUbBE7F0yE0h8BBD+naQ=="
+			"value": "IRZHkX0Pr0iJTLRuwLz5sQ=="
 		}
 	],
 	"protocolProfileBehavior": {}

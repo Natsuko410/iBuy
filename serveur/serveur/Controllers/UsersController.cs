@@ -69,6 +69,14 @@ namespace serveur.Controllers
                     return Unauthorized();
                 }
 
+                // Finds User in Database + Checks password Hash
+                User UserDB = db.Users.AsNoTracking().Where(u => u.IdUser == IdUser).FirstOrDefault();
+                if (UserDB != null && !UserDB.Mdp.Equals(user.Mdp))
+                {
+                    // Hash password before saving
+                    user.Mdp = BCrypt.HashPassword(user.Mdp, BCrypt.GenerateSalt());
+                }
+
                 db.Entry(user).State = EntityState.Modified;
 
                 try
