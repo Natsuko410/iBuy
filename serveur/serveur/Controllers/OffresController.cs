@@ -18,6 +18,12 @@ namespace serveur.Controllers {
     {
         private IBuyContext db = new IBuyContext();
 
+        //OPTIONS
+        public IHttpActionResult OptionsOffres()
+        {
+            return Ok();
+        }
+
         // GET: api/Offres
         public IQueryable<Offre> GetOffres([FromUri] int idEnch)
         {

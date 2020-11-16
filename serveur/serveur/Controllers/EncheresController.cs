@@ -18,6 +18,12 @@ namespace serveur.Controllers
     {
         private IBuyContext db = new IBuyContext();
 
+        //OPTIONS
+        public IHttpActionResult OptionsEncheres()
+        {
+            return Ok();
+        }
+
         // GET: api/Encheres
         public IQueryable<Enchere> GetEncheres()
         {

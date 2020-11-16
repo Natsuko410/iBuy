@@ -17,6 +17,12 @@ namespace serveur.Controllers
     {
         private IBuyContext db = new IBuyContext();
 
+        //OPTIONS
+        public IHttpActionResult OptionsUsers()
+        {
+            return Ok();
+        }
+
         // GET: api/Users
         public IQueryable<User> GetUsers()
         {

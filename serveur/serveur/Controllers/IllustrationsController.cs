@@ -22,6 +22,12 @@ namespace serveur.Controllers
     {
         private IBuyContext db = new IBuyContext();
 
+        //OPTIONS
+        public IHttpActionResult OptionsIllustrations()
+        {
+            return Ok();
+        }
+
         // GET: api/Illustrations
         public IHttpActionResult GetIllustrations()
         {

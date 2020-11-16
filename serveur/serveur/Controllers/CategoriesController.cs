@@ -18,6 +18,12 @@ namespace serveur.Controllers
     {
         private IBuyContext db = new IBuyContext();
 
+        //OPTIONS
+        public IHttpActionResult OptionsCategories()
+        {
+            return Ok();
+        }
+
         // GET: api/Categories
         public IQueryable<Categorie> GetCategories()
         {

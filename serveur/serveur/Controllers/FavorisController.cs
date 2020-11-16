@@ -18,6 +18,12 @@ namespace serveur.Controllers
     {
         private IBuyContext db = new IBuyContext();
 
+        //OPTIONS
+        public IHttpActionResult OptionsFavoris()
+        {
+            return Ok();
+        }
+
         // GET: api/Favoris
         public IHttpActionResult GetFavorisFromUser()
         {

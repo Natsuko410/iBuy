@@ -18,6 +18,12 @@ namespace serveur.Controllers
     {
         private IBuyContext db = new IBuyContext();
 
+        //OPTIONS
+        public IHttpActionResult OptionsAvis()
+        {
+            return Ok();
+        }
+
         // GET: api/Avis
         public IQueryable<Avis> GetAvis()
         {

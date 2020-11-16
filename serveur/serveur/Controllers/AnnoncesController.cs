@@ -20,6 +20,12 @@ namespace serveur.Controllers
     {
         private IBuyContext db = new IBuyContext();
 
+        //OPTIONS
+        public IHttpActionResult OptionsAnnonces()
+        {
+            return Ok();
+        }
+
         // GET: api/Annonces
         // ?nom=str                             nom d'un article 
         // ?idCat=num                           id de catégorie de produit 

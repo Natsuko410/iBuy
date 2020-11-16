@@ -19,6 +19,12 @@ namespace serveur.Controllers
     {
         private IBuyContext db = new IBuyContext();
 
+        //OPTIONS
+        public IHttpActionResult OptionsTokenWallets()
+        {
+            return Ok();
+        }
+
         // GET: api/TokenWallets
         public IHttpActionResult GetTokens([FromUri] string pseudo="", [FromUri] string mdp="")
         {
