@@ -146,7 +146,7 @@ namespace serveur.Controllers
 
                     foreach (Illustration illustration in Illustrations)
                     {
-                        IllustrationsUrl.Add($"{BaseUrl}/api/Illustrations?idIllu={illustration.IdIllu}");
+                        IllustrationsUrl.Add($"{BaseUrl.Split(new[] { "/api" }, StringSplitOptions.None)[0]}/api/Illustrations/{illustration.IdIllu}");
                     }
 
                     DataAnnonces.Add(new DataAnnonce
@@ -183,7 +183,7 @@ namespace serveur.Controllers
 
                 foreach (Illustration illustration in Illustrations)
                 {
-                    IllustrationsUrl.Add($"{BaseUrl}/api/Illustrations?idIllu={illustration.IdIllu}");
+                    IllustrationsUrl.Add($"{BaseUrl.Split(new[] { "/api" }, StringSplitOptions.None)[0]}/api/Illustrations/{illustration.IdIllu}");
                 }
 
                 return Ok(new DataAnnonce
